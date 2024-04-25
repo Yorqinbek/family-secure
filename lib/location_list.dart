@@ -27,8 +27,11 @@ class _LocationListPageState extends State<LocationListPage> {
   GoogleMapController? controller;
 
   void _onMapCreated(GoogleMapController controllerParam) {
+    String sty =
+        '[  {    "elementType": "geometry",    "stylers": [      {        "color": "#242f3e"      }    ]  },  {    "elementType": "labels.text.fill",    "stylers": [      {        "color": "#746855"      }    ]  },  {    "elementType": "labels.text.stroke",    "stylers": [      {        "color": "#242f3e"      }    ]  },  {    "featureType": "administrative.locality",    "elementType": "labels.text.fill",    "stylers": [      {        "color": "#d59563"      }    ]  },  {    "featureType": "poi",    "elementType": "labels.text.fill",    "stylers": [      {        "color": "#d59563"      }    ]  },  {    "featureType": "poi.park",    "elementType": "geometry",    "stylers": [      {        "color": "#263c3f"      }    ]  },  {    "featureType": "poi.park",    "elementType": "labels.text.fill",    "stylers": [      {        "color": "#6b9a76"      }    ]  },  {    "featureType": "road",    "elementType": "geometry",    "stylers": [      {        "color": "#38414e"      }    ]  },  {    "featureType": "road",    "elementType": "geometry.stroke",    "stylers": [      {        "color": "#212a37"      }    ]  },  {    "featureType": "road",    "elementType": "labels.text.fill",    "stylers": [      {        "color": "#9ca5b3"      }    ]  },  {    "featureType": "road.highway",    "elementType": "geometry",    "stylers": [      {        "color": "#746855"      }    ]  },  {    "featureType": "road.highway",    "elementType": "geometry.stroke",    "stylers": [      {        "color": "#1f2835"      }    ]  },  {    "featureType": "road.highway",    "elementType": "labels.text.fill",    "stylers": [      {        "color": "#f3d19c"      }    ]  },  {    "featureType": "transit",    "elementType": "geometry",    "stylers": [      {        "color": "#2f3948"      }    ]  },  {    "featureType": "transit.station",    "elementType": "labels.text.fill",    "stylers": [      {        "color": "#d59563"      }    ]  },  {    "featureType": "water",    "elementType": "geometry",    "stylers": [      {        "color": "#17263c"      }    ]  },  {    "featureType": "water",    "elementType": "labels.text.fill",    "stylers": [      {        "color": "#515c6d"      }    ]  },  {    "featureType": "water",    "elementType": "labels.text.stroke",    "stylers": [      {        "color": "#17263c"      }    ]  }]';
     setState(() {
       controller = controllerParam;
+      // controller!.setMapStyle(sty);
     });
   }
 
@@ -91,132 +94,216 @@ class _LocationListPageState extends State<LocationListPage> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(
-        centerTitle: true, // this is all you need
-        title: Text("Местоположение"),
-        leading: IconButton(
-          icon: Icon(
-            Icons.arrow_back_ios,
-            color: Colors.black,
-          ),
-          onPressed: () {
-            Navigator.pop(context);
-          },
-        ),
-      ),
-      body: SafeArea(
-        child: Container(
-          child: locations == null
-              ? SizedBox()
-              : locations!.isEmpty
-                  ? Center(
-                      child: Text("Пустой"),
-                    )
-                  : Column(
+      extendBodyBehindAppBar: true,
+      // appBar: AppBar(
+      //   backgroundColor: Colors.transparent,
+      //   centerTitle: true, // this is all you need
+      //   leading: IconButton(
+      //     icon: Icon(
+      //       Icons.arrow_back_ios,
+      //       color: Colors.black,
+      //     ),
+      //     onPressed: () {
+      //       Navigator.pop(context);
+      //     },
+      //   ),
+      // ),
+      body: locations == null
+          ? SizedBox()
+          : locations!.isEmpty
+              ? Center(
+                  child: Text("Пустой"),
+                )
+              : Stack(
+                  children: [
+                    Column(
                       children: [
-                        Container(
-                          width: MediaQuery.of(context).size.width,
-                          height: MediaQuery.of(context).size.height * 0.4,
-                          child: GoogleMap(
-                            myLocationEnabled: true,
-                            initialCameraPosition: CameraPosition(
-                              target: _center,
-                              zoom: 15.0,
+                        Expanded(
+                          child: Container(
+                            width: MediaQuery.of(context).size.width,
+                            height: MediaQuery.of(context).size.height * 0.50,
+                            child: GoogleMap(
+                              myLocationEnabled: true,
+                              initialCameraPosition: CameraPosition(
+                                target: _center,
+                                zoom: 15.0,
+                              ),
+                              markers: _markers.values.toSet(),
+                              myLocationButtonEnabled: true,
+                              onMapCreated: _onMapCreated,
+                              gestureRecognizers: Set()
+                                ..add(Factory<PanGestureRecognizer>(
+                                    () => PanGestureRecognizer()))
+                                ..add(Factory<ScaleGestureRecognizer>(
+                                    () => ScaleGestureRecognizer())),
                             ),
-                            markers: _markers.values.toSet(),
-                            myLocationButtonEnabled: true,
-                            onMapCreated: _onMapCreated,
-                            gestureRecognizers: Set()
-                              ..add(Factory<PanGestureRecognizer>(
-                                  () => PanGestureRecognizer()))
-                              ..add(Factory<ScaleGestureRecognizer>(
-                                  () => ScaleGestureRecognizer())),
                           ),
                         ),
-                        SizedBox(
-                          height: MediaQuery.of(context).size.height * 0.03,
-                        ),
+                        // SizedBox(
+                        //   height: MediaQuery.of(context).size.height * 0.03,
+                        // ),
                         Expanded(
-                          child: ListView.builder(
-                              itemCount: locations!.length,
-                              itemBuilder: (context, index) {
-                                Map<String, dynamic> location_list =
-                                    locations![index];
-                                return ListTile(
-                                  tileColor: index == active_index
-                                      ? Colors.black12
-                                      : null,
-                                  // leading: Icon(Icons.person),
-                                  leading: Icon(
-                                    Icons.location_history,
-                                    // color: Colors.white,
-                                  ),
-                                  title: Row(
-                                    mainAxisAlignment:
-                                        MainAxisAlignment.spaceBetween,
-                                    children: [
-                                      Text(
-                                        Jiffy.parse(location_list['time'])
-                                            .format(
-                                                pattern:
-                                                    'MMMM do yyyy, h:mm:ss a')
-                                            .toString(),
-                                        style: TextStyle(
-                                            fontWeight: FontWeight.bold),
+                          child: Container(
+                            decoration: BoxDecoration(
+                              color: Colors.white,
+                              borderRadius: BorderRadius.only(
+                                  topLeft: Radius.circular(30),
+                                  topRight: Radius.circular(30)),
+                              boxShadow: [
+                                BoxShadow(
+                                  color: Colors.grey,
+                                  blurRadius: 10,
+                                  // offset: Offset(4, 8), // Shadow position
+                                ),
+                              ],
+                            ),
+                            child: Expanded(
+                              child: Column(
+                                mainAxisAlignment: MainAxisAlignment.start,
+                                crossAxisAlignment: CrossAxisAlignment.start,
+                                children: [
+                                  Padding(
+                                    padding: const EdgeInsets.only(
+                                        left: 20, top: 20),
+                                    child: Text(
+                                      "Location History",
+                                      style: TextStyle(
+                                        fontSize: 20,
+                                        color: Colors.black,
+                                        fontWeight: FontWeight.bold,
                                       ),
-                                      // Text(
-                                      //   // From X
-                                      //   Jiffy.parse(sms_list['time']).from(
-                                      //       Jiffy.parse(
-                                      //           DateTime.now().toString())),
-                                      //   style: TextStyle(fontSize: 12),
-                                      // ),
-                                    ],
+                                      textAlign: TextAlign.left,
+                                    ),
                                   ),
-                                  subtitle: Text(location_list['lat'] +
-                                      "," +
-                                      location_list['lon']),
-                                  // trailing: Icon(Icons.navigate_next),
-                                  onTap: () async {
-                                    setState(() {
-                                      active_index = index;
-                                      _center = LatLng(
-                                          double.parse(location_list['lat']),
-                                          double.parse(location_list['lon']));
-                                    });
-                                    final marker = Marker(
-                                      markerId: MarkerId("initial_marker"),
-                                      position: _center,
-                                      infoWindow: InfoWindow(
-                                        title:
-                                            Jiffy.parse(location_list['time'])
-                                                .format(
-                                                    pattern:
-                                                        'MMMM do yyyy, h:mm:ss')
-                                                .toString(),
-                                        // snippet: "An interesting location"
-                                      ),
-                                    );
-                                    setState(() {
-                                      controller!.animateCamera(
-                                          CameraUpdate.newLatLngZoom(
-                                              _center, 15));
+                                  Container(
+                                    child: Expanded(
+                                      child: ListView.builder(
+                                          itemCount: locations!.length,
+                                          itemBuilder: (context, index) {
+                                            Map<String, dynamic> location_list =
+                                                locations![index];
 
-                                      _markers["initial_marker"] = marker;
-                                    });
-                                    // Navigator.of(context)
-                                    //     .push(MaterialPageRoute(
-                                    //         builder: (context) => SmsInfoPage(
-                                    //               sender: sms_list['sender'],
-                                    //             )));
-                                  },
-                                );
-                              }),
+                                            return Material(
+                                              color: Colors.white,
+                                              child: Column(
+                                                children: [
+                                                  ListTile(
+                                                    tileColor: index ==
+                                                            active_index
+                                                        // ? Color(0XFFedf9fc)
+                                                        ? Colors.grey[200]
+                                                        : null,
+                                                    // leading: Icon(Icons.person),
+                                                    leading: Icon(
+                                                      Icons.location_pin,
+                                                      // color: Colors.blueAccent,
+                                                      // color: Colors.white,
+                                                    ),
+                                                    title: Row(
+                                                      mainAxisAlignment:
+                                                          MainAxisAlignment
+                                                              .spaceBetween,
+                                                      children: [
+                                                        Text(
+                                                          "Buyuk ipak yo`li",
+                                                          style: TextStyle(
+                                                              fontWeight:
+                                                                  FontWeight
+                                                                      .bold),
+                                                        ),
+                                                        // Text(
+                                                        //   // From X
+                                                        //   Jiffy.parse(sms_list['time']).from(
+                                                        //       Jiffy.parse(
+                                                        //           DateTime.now().toString())),
+                                                        //   style: TextStyle(fontSize: 12),
+                                                        // ),
+                                                      ],
+                                                    ),
+                                                    subtitle: Text(
+                                                      Jiffy.parse(location_list[
+                                                              'time'])
+                                                          // .format(
+                                                          //     pattern:
+                                                          //         'MMMM do yyyy, h:mm:ss a')
+                                                          .format(
+                                                              pattern: 'h:mm')
+                                                          .toString(),
+                                                    ),
+                                                    // subtitle: Text(
+                                                    //     location_list['lat'] +
+                                                    //         "," +
+                                                    //         location_list[
+                                                    //             'lon']),
+                                                    // trailing: Icon(Icons.navigate_next),
+                                                    onTap: () async {
+                                                      setState(() {
+                                                        active_index = index;
+                                                        _center = LatLng(
+                                                            double.parse(
+                                                                location_list[
+                                                                    'lat']),
+                                                            double.parse(
+                                                                location_list[
+                                                                    'lon']));
+                                                      });
+                                                      final marker = Marker(
+                                                        markerId: MarkerId(
+                                                            "initial_marker"),
+                                                        position: _center,
+                                                        infoWindow: InfoWindow(
+                                                          title: Jiffy.parse(
+                                                                  location_list[
+                                                                      'time'])
+                                                              .format(
+                                                                  pattern:
+                                                                      'MMMM do yyyy, h:mm:ss')
+                                                              .toString(),
+                                                          // snippet: "An interesting location"
+                                                        ),
+                                                      );
+                                                      setState(() {
+                                                        controller!.animateCamera(
+                                                            CameraUpdate
+                                                                .newLatLngZoom(
+                                                                    _center,
+                                                                    15));
+
+                                                        _markers[
+                                                                "initial_marker"] =
+                                                            marker;
+                                                      });
+                                                      // Navigator.of(context)
+                                                      //     .push(MaterialPageRoute(
+                                                      //         builder: (context) => SmsInfoPage(
+                                                      //               sender: sms_list['sender'],
+                                                      //             )));
+                                                    },
+                                                  ),
+                                                ],
+                                              ),
+                                            );
+                                          }),
+                                    ),
+                                  ),
+                                ],
+                              ),
+                            ),
+                          ),
                         ),
                       ],
                     ),
-        ),
-      ),
+                    Padding(
+                      padding: const EdgeInsets.only(left: 10, top: 20),
+                      child: IconButton(
+                        onPressed: () {
+                          Navigator.pop(context);
+                        },
+                        icon: Icon(Icons.arrow_back_ios),
+                      ),
+                    ),
+                  ],
+                ),
     );
   }
 }
