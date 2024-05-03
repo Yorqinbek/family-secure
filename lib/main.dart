@@ -2,6 +2,8 @@ import 'package:firebase_core/firebase_core.dart';
 import 'package:flutter/material.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:soqchi/childs_list.dart';
+import 'package:soqchi/dash.dart';
+import 'package:soqchi/home.dart';
 import 'package:soqchi/login.dart';
 
 bool isreg = false;
@@ -49,7 +51,7 @@ class MyApp extends StatelessWidget {
         // colorScheme: ColorScheme.fromSeed(seedColor: Colors.deepPurple),
         useMaterial3: true,
       ),
-      home: isreg ? ChildListPage() : LoginPage(),
+      home: isreg ? DashboardPage() : LoginPage(),
     );
   }
 }

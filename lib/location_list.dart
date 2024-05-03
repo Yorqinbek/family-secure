@@ -94,20 +94,21 @@ class _LocationListPageState extends State<LocationListPage> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      extendBodyBehindAppBar: true,
-      // appBar: AppBar(
-      //   backgroundColor: Colors.transparent,
-      //   centerTitle: true, // this is all you need
-      //   leading: IconButton(
-      //     icon: Icon(
-      //       Icons.arrow_back_ios,
-      //       color: Colors.black,
-      //     ),
-      //     onPressed: () {
-      //       Navigator.pop(context);
-      //     },
-      //   ),
-      // ),
+      // extendBodyBehindAppBar: true,
+      appBar: AppBar(
+        title: Text("Joylashuvlar"),
+        // backgroundColor: Colors.transparent,
+        centerTitle: true, // this is all you need
+        leading: IconButton(
+          icon: Icon(
+            Icons.arrow_back_ios,
+            color: Colors.black,
+          ),
+          onPressed: () {
+            Navigator.pop(context);
+          },
+        ),
+      ),
       body: locations == null
           ? SizedBox()
           : locations!.isEmpty
@@ -142,6 +143,7 @@ class _LocationListPageState extends State<LocationListPage> {
                         // SizedBox(
                         //   height: MediaQuery.of(context).size.height * 0.03,
                         // ),
+
                         Expanded(
                           child: Container(
                             decoration: BoxDecoration(

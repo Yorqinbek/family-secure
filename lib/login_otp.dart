@@ -6,8 +6,11 @@ import 'package:google_sign_in/google_sign_in.dart';
 import 'package:intl_phone_number_input/intl_phone_number_input.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:soqchi/childs_list.dart';
+import 'package:soqchi/components/dialogs.dart';
 import 'package:soqchi/poster_help/post_helper.dart';
 import 'dart:convert';
+
+import 'package:soqchi/register.dart';
 
 class LoginOtpPage extends StatefulWidget {
   final String phone_number;
@@ -20,6 +23,9 @@ class LoginOtpPage extends StatefulWidget {
 class _LoginOtpPageState extends State<LoginOtpPage> {
   ValueNotifier userCredential = ValueNotifier('');
   final Future<SharedPreferences> _prefs = SharedPreferences.getInstance();
+
+  String otp = "";
+  bool resend_code = false;
 
   Future<dynamic> signInWithGoogle() async {
     try {
@@ -49,35 +55,71 @@ class _LoginOtpPageState extends State<LoginOtpPage> {
     }
   }
 
-  Future<void> send_phone() async {
-    userCredential.value = await signInWithGoogle();
-    if (userCredential.value != null) {
-      // print(userCredential.value);
-      var user_email = userCredential.value.user!.email;
-      var name = userCredential.value.user!.displayName;
-      var user_id = userCredential.value.user!.uid;
-      Map data = {'email': user_email, 'password': user_id, 'name': name};
-      var response = await post_helper(data, '/register');
-      if (response != "Error") {
-        var data = jsonDecode(response);
-        print(data);
-        // final Map parsed = json.decode(response);
-
-        if (data['status'] ||
-            data['message']
-                .toString()
-                .contains('The email has already been taken.')) {
-          final SharedPreferences prefs = await _prefs;
-          prefs.setBool("regstatus", true);
-          prefs.setString("email", user_email);
-          prefs.setString("uid", user_id);
-          Navigator.pushReplacement(context,
-              MaterialPageRoute(builder: (context) {
-            return ChildListPage();
-          }));
+  Future<void> send_otp() async {
+    MyCustomDialogs.my_showAlertDialog(context);
+    Map data = {
+      'otp': otp.toString(),
+    };
+    print(data);
+    var response = await post_helper(data, '/otp');
+    if (response != "Error") {
+      final Map response_json = json.decode(response);
+      if (response_json['status']) {
+        Navigator.pop(context);
+        Navigator.pushReplacement(context,
+            MaterialPageRoute(builder: (context) {
+          return RegisterPage(
+            phone_number: widget.phone_number,
+          );
+        }));
+        print("Togri");
+      } else {
+        Navigator.pop(context);
+        if (response_json['message'].toString().contains("Otp incorrect")) {
+          MyCustomDialogs.error_dialog_custom(context,
+              "Tekshirish kodi noto`g`ri! Iltimos tekshirib qayta tering.");
+        } else {
+          MyCustomDialogs.error_network(context);
         }
       }
+    } else {
+      Navigator.pop(context);
+      MyCustomDialogs.error_network(context);
     }
+    print(otp);
+    // userCredential.value = await signInWithGoogle();
+    // if (userCredential.value != null) {
+    //   // print(userCredential.value);
+    //   var user_email = userCredential.value.user!.email;
+    //   var name = userCredential.value.user!.displayName;
+    //   var user_id = userCredential.value.user!.uid;
+    //   Map data = {'email': user_email, 'password': user_id, 'name': name};
+    //   var response = await post_helper(data, '/register');
+    //   if (response != "Error") {
+    //     var data = jsonDecode(response);
+    //     print(data);
+    //     // final Map parsed = json.decode(response);
+
+    //     if (data['status'] ||
+    //         data['message']
+    //             .toString()
+    //             .contains('The email has already been taken.')) {
+    //       final SharedPreferences prefs = await _prefs;
+    //       prefs.setBool("regstatus", true);
+    //       prefs.setString("email", user_email);
+    //       prefs.setString("uid", user_id);
+    //       Navigator.pushReplacement(context,
+    //           MaterialPageRoute(builder: (context) {
+    //         return ChildListPage();
+    //       }));
+    //     }
+    //   }
+    // }
+  }
+
+  @override
+  void initState() {
+    super.initState();
   }
 
   @override
@@ -157,48 +199,77 @@ class _LoginOtpPageState extends State<LoginOtpPage> {
                                     },
                                     //runs when every textfield is filled
                                     onSubmit: (String verificationCode) {
-                                      showDialog(
-                                          context: context,
-                                          builder: (context) {
-                                            return AlertDialog(
-                                              title: Text("Verification Code"),
-                                              content: Text(
-                                                  'Code entered is $verificationCode'),
-                                            );
-                                          });
+                                      setState(() {
+                                        otp = verificationCode;
+                                      });
+                                      send_otp();
+                                      // showDialog(
+                                      //     context: context,
+                                      //     builder: (context) {
+                                      //       return AlertDialog(
+                                      //         title: Text("Verification Code"),
+                                      //         content: Text(
+                                      //             'Code entered is $verificationCode'),
+                                      //       );
+                                      //     });
                                     }, // end onSubmit
                                   ),
                                 ],
                               ),
                               Column(
                                 children: [
-                                  Row(
-                                    mainAxisAlignment: MainAxisAlignment.center,
-                                    children: [
-                                      TimerCountdown(
-                                        timeTextStyle: TextStyle(
-                                            color: Colors.grey, fontSize: 16),
-                                        enableDescriptions: false,
-                                        spacerWidth: 2,
-                                        format:
-                                            CountDownTimerFormat.minutesSeconds,
-                                        endTime: DateTime.now().add(
-                                          Duration(
-                                            minutes: 3,
-                                            seconds: 0,
-                                          ),
+                                  resend_code
+                                      ? Row(
+                                          mainAxisAlignment:
+                                              MainAxisAlignment.center,
+                                          children: [
+                                            InkWell(
+                                              onTap: () {
+                                                setState(() {
+                                                  resend_code = false;
+                                                });
+                                              },
+                                              child: Text(
+                                                "Qayta jo'natish",
+                                                style: TextStyle(
+                                                    color: Colors.blueAccent),
+                                              ),
+                                            ),
+                                          ],
+                                        )
+                                      : Row(
+                                          mainAxisAlignment:
+                                              MainAxisAlignment.center,
+                                          children: [
+                                            TimerCountdown(
+                                              timeTextStyle: TextStyle(
+                                                  color: Colors.grey,
+                                                  fontSize: 16),
+                                              enableDescriptions: false,
+                                              spacerWidth: 2,
+                                              format: CountDownTimerFormat
+                                                  .minutesSeconds,
+                                              endTime: DateTime.now().add(
+                                                Duration(
+                                                  minutes: 3,
+                                                  seconds: 0,
+                                                ),
+                                              ),
+                                              onEnd: () {
+                                                print("Timer finished");
+                                                setState(() {
+                                                  resend_code = true;
+                                                });
+                                              },
+                                            ),
+                                            Text(
+                                              "  dan so'ng qayta yuborish",
+                                              style: TextStyle(
+                                                  color: Colors.grey,
+                                                  fontSize: 16),
+                                            ),
+                                          ],
                                         ),
-                                        onEnd: () {
-                                          print("Timer finished");
-                                        },
-                                      ),
-                                      Text(
-                                        "  dan so'ng qayta yuborish",
-                                        style: TextStyle(
-                                            color: Colors.grey, fontSize: 16),
-                                      ),
-                                    ],
-                                  ),
                                   SizedBox(
                                     height: 15,
                                   ),
@@ -221,7 +292,7 @@ class _LoginOtpPageState extends State<LoginOtpPage> {
                                             ),
                                           ),
                                         ),
-                                        onPressed: send_phone,
+                                        onPressed: send_otp,
                                         child: Text(
                                           "Davom etish",
                                           style: TextStyle(

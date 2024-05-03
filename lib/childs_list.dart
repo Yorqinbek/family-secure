@@ -48,11 +48,12 @@ class _ChildListPageState extends State<ChildListPage> {
     if (token == '') {
       print("Token yoq");
       Map data = {
-        'email': prefs.getString('email'),
-        'password': prefs.getString('uid')
+        'phone': prefs.getString('phone'),
+        'password': prefs.getString('phone')
       };
       //login
       String response = await post_helper(data, '/login');
+      print(response);
       if (response != "Error") {
         final Map response_json = json.decode(response);
         print("Login response:$response_json");
