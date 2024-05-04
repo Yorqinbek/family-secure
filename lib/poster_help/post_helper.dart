@@ -14,6 +14,7 @@ Future<String> post_helper(Map data, String link) async {
   try {
     var response = await http.post(url,
         headers: {"Content-Type": "application/json"}, body: body);
+    print(utf8.decode(response.bodyBytes));
     if (response.statusCode == 200) {
       return utf8.decode(response.bodyBytes);
     } else {
@@ -43,7 +44,6 @@ Future<String> post_helper_token(Map data, String link, String token) async {
           response_json['message'].toString().contains("Token expired")) {
         String response2 = await refresh_token(token);
         final Map response_json = json.decode(response2);
-        print(response_json);
         if (response_json['status']) {
           print("token yangilandi.");
           final SharedPreferences prefs = await _prefs;

@@ -156,9 +156,22 @@ class _AddChildNameState extends State<AddChildName> {
                                 context, "Barcha maydonlarni to'ldiring!");
                           } else {
                             String name = _nameController.text.toString();
+                            var jins = 0;
+                            if (_gender.contains("ogil")){
+                                jins = 1;
+                            }
+                            else if(_gender.contains("boshqa")){
+                                jins = 2;
+                            }
+                            else{
+                              jins = 0;
+                            }
+                            int yoshi = int.parse(_oldController.text.toString());
                             Navigator.of(context).push(MaterialPageRoute(
                                 builder: (context) => AddChild(
                                       child_name: name,
+                                      jins: jins,
+                                      old: yoshi,
                                     )));
                           }
                         },

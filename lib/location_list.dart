@@ -295,15 +295,15 @@ class _LocationListPageState extends State<LocationListPage> {
                         ),
                       ],
                     ),
-                    Padding(
-                      padding: const EdgeInsets.only(left: 10, top: 20),
-                      child: IconButton(
-                        onPressed: () {
-                          Navigator.pop(context);
-                        },
-                        icon: Icon(Icons.arrow_back_ios),
-                      ),
-                    ),
+                    // Padding(
+                    //   padding: const EdgeInsets.only(left: 10, top: 20),
+                    //   child: IconButton(
+                    //     onPressed: () {
+                    //       Navigator.pop(context);
+                    //     },
+                    //     icon: Icon(Icons.arrow_back_ios),
+                    //   ),
+                    // ),
                   ],
                 ),
     );

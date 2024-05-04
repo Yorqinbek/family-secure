@@ -4,6 +4,7 @@ import 'package:flutter/material.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:soqchi/childs_list.dart';
 import 'package:soqchi/components/dialogs.dart';
+import 'package:soqchi/dash.dart';
 import 'package:soqchi/poster_help/post_helper.dart';
 
 class RegisterPage extends StatefulWidget {
@@ -36,7 +37,7 @@ class _RegisterPageState extends State<RegisterPage> {
         prefs.setString("phone", widget.phone_number);
         Navigator.pushReplacement(context,
             MaterialPageRoute(builder: (context) {
-          return ChildListPage();
+          return DashboardPage();
         }));
       } else {
         MyCustomDialogs.error_network(context);

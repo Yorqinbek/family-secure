@@ -7,6 +7,7 @@ import 'package:intl_phone_number_input/intl_phone_number_input.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:soqchi/childs_list.dart';
 import 'package:soqchi/components/dialogs.dart';
+import 'package:soqchi/dash.dart';
 import 'package:soqchi/poster_help/post_helper.dart';
 import 'dart:convert';
 
@@ -26,6 +27,7 @@ class _LoginOtpPageState extends State<LoginOtpPage> {
 
   String otp = "";
   bool resend_code = false;
+
 
   Future<dynamic> signInWithGoogle() async {
     try {
@@ -59,19 +61,31 @@ class _LoginOtpPageState extends State<LoginOtpPage> {
     MyCustomDialogs.my_showAlertDialog(context);
     Map data = {
       'otp': otp.toString(),
+      'phone':widget.phone_number
     };
+    final SharedPreferences prefs = await _prefs;
     print(data);
     var response = await post_helper(data, '/otp');
     if (response != "Error") {
       final Map response_json = json.decode(response);
       if (response_json['status']) {
-        Navigator.pop(context);
-        Navigator.pushReplacement(context,
-            MaterialPageRoute(builder: (context) {
-          return RegisterPage(
-            phone_number: widget.phone_number,
-          );
-        }));
+        if(response_json['regstatus']){
+          prefs.setBool("regstatus", true);
+          prefs.setString("phone", widget.phone_number);
+          Navigator.pushReplacement(context,
+              MaterialPageRoute(builder: (context) {
+                return DashboardPage();
+              }));
+        }
+        else{
+          Navigator.pop(context);
+          Navigator.pushReplacement(context,
+              MaterialPageRoute(builder: (context) {
+                return RegisterPage(
+                  phone_number: widget.phone_number,
+                );
+              }));
+        }
         print("Togri");
       } else {
         Navigator.pop(context);

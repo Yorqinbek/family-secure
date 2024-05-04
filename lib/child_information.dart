@@ -18,7 +18,8 @@ import 'package:soqchi/sms_list.dart';
 
 class ChildInformationPage extends StatefulWidget {
   final String childuid;
-  const ChildInformationPage({super.key, required this.childuid});
+  final String name;
+  const ChildInformationPage({super.key, required this.childuid,required this.name});
 
   @override
   State<ChildInformationPage> createState() => _ChildInformationPageState();
@@ -122,7 +123,7 @@ class _ChildInformationPageState extends State<ChildInformationPage> {
         backgroundColor: Colors.white,
         centerTitle: true, // this is all you need
         title: Text(
-          "Akbar",
+          widget.name,
         ),
         leading: IconButton(
           icon: Icon(

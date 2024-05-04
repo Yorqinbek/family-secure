@@ -8,11 +8,14 @@ import 'package:qr_code_scanner/qr_code_scanner.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:soqchi/components/dialogs.dart';
 import 'package:soqchi/childs_list.dart';
+import 'package:soqchi/dash.dart';
 import 'package:soqchi/poster_help/post_helper.dart';
 
 class AddChild extends StatefulWidget {
   final String child_name;
-  const AddChild({super.key, required this.child_name});
+  final int old;
+  final int jins;
+  const AddChild({super.key, required this.child_name,required this.old,required this.jins});
 
   @override
   State<AddChild> createState() => _AddChildState();
@@ -80,6 +83,8 @@ class _AddChildState extends State<AddChild> {
       Map data = {
         'chid': result!.code,
         'chname': widget.child_name,
+        'jins':widget.jins,
+        'old':widget.old
       };
       var response = await post_helper_token(data, '/addchild', token);
       if (response != "Error") {
@@ -89,12 +94,12 @@ class _AddChildState extends State<AddChild> {
               context, "Добавлен новый ребенок!");
           Navigator.pushReplacement(context,
               MaterialPageRoute(builder: (context) {
-            return ChildListPage();
+            return DashboardPage();
           }));
         } else {
           Navigator.pushReplacement(context,
               MaterialPageRoute(builder: (context) {
-            return ChildListPage();
+            return DashboardPage();
           }));
           MyCustomDialogs.error_dialog_custom(
               context, "Пользователь с данным qr-кодом не найден!");
@@ -102,7 +107,7 @@ class _AddChildState extends State<AddChild> {
       } else {
         Navigator.pushReplacement(context,
             MaterialPageRoute(builder: (context) {
-          return ChildListPage();
+          return DashboardPage();
         }));
         MyCustomDialogs.error_dialog_custom(
             context, "Ошибка подключения к серверу. Попробуйте еще раз!");
