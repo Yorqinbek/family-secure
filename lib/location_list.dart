@@ -4,6 +4,7 @@ import 'dart:convert';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/gestures.dart';
 import 'package:flutter/material.dart';
+import 'package:geocoding/geocoding.dart';
 import 'package:google_maps_flutter/google_maps_flutter.dart';
 import 'package:jiffy/jiffy.dart';
 import 'package:pull_to_refresh/pull_to_refresh.dart';
@@ -52,6 +53,13 @@ class _LocationListPageState extends State<LocationListPage> {
     _onRefresh();
   }
 
+  Future<String> get_loca_name(String lat, String lon) async {
+    List<Placemark> placemarks =
+        await placemarkFromCoordinates(double.parse(lat), double.parse(lon));
+    Placemark place = placemarks[0];
+    return "${place.locality}, ${place.street}, ${place.country}";
+  }
+
   Future<void> _onRefresh() async {
     await Jiffy.setLocale('ru');
     final SharedPreferences prefs = await _prefs;
@@ -69,18 +77,25 @@ class _LocationListPageState extends State<LocationListPage> {
         });
         if (locations != null && !locations!.isEmpty) {
           Map<String, dynamic> location_list = locations![0];
+          final bitmapIcon = await BitmapDescriptor.fromAssetImage(
+              ImageConfiguration(size: Size(64, 64)),
+              'assets/images/location_blue.png');
+          List<Placemark> placemarks = await placemarkFromCoordinates(
+              double.parse(location_list['lat']),
+              double.parse(location_list['lon']));
+          Placemark place = placemarks[0]; // Taking the first returned result
           setState(() {
             _center = LatLng(double.parse(location_list['lat']),
                 double.parse(location_list['lon']));
             final marker = Marker(
               markerId: MarkerId("initial_marker"),
               position: _center,
+              icon: bitmapIcon,
               infoWindow: InfoWindow(
-                  title: "Initial Marker", snippet: "An interesting location"),
+                  title: "${place.locality}, ${place.name}, ${place.country}",
+                  snippet: "${location_list['time']}"),
             );
-            setState(() {
-              _markers["initial_marker"] = marker;
-            });
+            _markers["initial_marker"] = marker;
           });
         }
       }
@@ -184,6 +199,28 @@ class _LocationListPageState extends State<LocationListPage> {
                                           itemBuilder: (context, index) {
                                             Map<String, dynamic> location_list =
                                                 locations![index];
+                                            var loc_name = FutureBuilder<
+                                                    String>(
+                                                future: get_loca_name(
+                                                    location_list['lat'],
+                                                    location_list['lon']),
+                                                builder: (context, snapshot) {
+                                                  if (snapshot
+                                                          .connectionState ==
+                                                      ConnectionState.waiting) {
+                                                    return CircularProgressIndicator(); // Show loading indicator
+                                                  } else if (snapshot
+                                                      .hasError) {
+                                                    return Text(
+                                                        "Error: ${snapshot.error}");
+                                                  } else {
+                                                    return Text(snapshot.data!,
+                                                        style: TextStyle(
+                                                            fontWeight:
+                                                                FontWeight
+                                                                    .bold));
+                                                  }
+                                                });
 
                                             return Material(
                                               color: Colors.white,
@@ -206,13 +243,7 @@ class _LocationListPageState extends State<LocationListPage> {
                                                           MainAxisAlignment
                                                               .spaceBetween,
                                                       children: [
-                                                        Text(
-                                                          "Buyuk ipak yo`li",
-                                                          style: TextStyle(
-                                                              fontWeight:
-                                                                  FontWeight
-                                                                      .bold),
-                                                        ),
+                                                        loc_name,
                                                         // Text(
                                                         //   // From X
                                                         //   Jiffy.parse(sms_list['time']).from(

@@ -38,6 +38,7 @@ Future<String> post_helper_token(Map data, String link, String token) async {
           "Authorization": 'Bearer $token',
         },
         body: body);
+    print(utf8.decode(response.bodyBytes));
     if (response.statusCode == 200) {
       final Map response_json = json.decode(utf8.decode(response.bodyBytes));
       if (!response_json['status'] &&

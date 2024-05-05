@@ -144,7 +144,7 @@ class _DashboardPageState extends State<DashboardPage> {
                                             builder: (context) =>
                                                 ChildInformationPage(
                                                   childuid: child['uid'],
-                                                  name: child['name'],
+                                                  name: child['name'] ?? "",
                                                 )));
 
                                     // Navigator.of(context).push(
