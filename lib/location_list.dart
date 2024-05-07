@@ -57,7 +57,10 @@ class _LocationListPageState extends State<LocationListPage> {
     List<Placemark> placemarks =
         await placemarkFromCoordinates(double.parse(lat), double.parse(lon));
     Placemark place = placemarks[0];
-    return "${place.locality}, ${place.street}, ${place.country}";
+    print(placemarks);
+    // return "${place.locality}, ${place.name}, ${place.country}";
+    return "${place.subLocality} , ${place.locality}";
+    // return "${place.subLocality}";
   }
 
   Future<void> _onRefresh() async {
@@ -89,13 +92,28 @@ class _LocationListPageState extends State<LocationListPage> {
                 double.parse(location_list['lon']));
             final marker = Marker(
               markerId: MarkerId("initial_marker"),
-              position: _center,
+              position: _center!,
               icon: bitmapIcon,
               infoWindow: InfoWindow(
-                  title: "${place.locality}, ${place.name}, ${place.country}",
-                  snippet: "${location_list['time']}"),
+                title: Jiffy.parse(
+                    location_list[
+                    'time'])
+                    .format(
+                    pattern:
+                    'MMMM do yyyy, h:mm:ss')
+                    .toString(),
+                // snippet: "An interesting location"
+              ),
             );
-            _markers["initial_marker"] = marker;
+            controller!.animateCamera(
+                CameraUpdate
+                    .newLatLngZoom(
+                    _center!,
+                    15));
+
+            _markers[
+            "initial_marker"] =
+                marker;
           });
         }
       }
@@ -126,7 +144,7 @@ class _LocationListPageState extends State<LocationListPage> {
       ),
       body: locations == null
           ? SizedBox()
-          : locations!.isEmpty
+          : locations!.isEmpty || locations!.length<=0
               ? Center(
                   child: Text("Пустой"),
                 )
@@ -139,9 +157,9 @@ class _LocationListPageState extends State<LocationListPage> {
                             width: MediaQuery.of(context).size.width,
                             height: MediaQuery.of(context).size.height * 0.50,
                             child: GoogleMap(
-                              myLocationEnabled: true,
+                              // myLocationEnabled: true,
                               initialCameraPosition: CameraPosition(
-                                target: _center,
+                                target: _center!,
                                 zoom: 15.0,
                               ),
                               markers: _markers.values.toSet(),
@@ -183,7 +201,7 @@ class _LocationListPageState extends State<LocationListPage> {
                                     padding: const EdgeInsets.only(
                                         left: 20, top: 20),
                                     child: Text(
-                                      "Location History",
+                                      "Локации",
                                       style: TextStyle(
                                         fontSize: 20,
                                         color: Colors.black,
@@ -208,7 +226,7 @@ class _LocationListPageState extends State<LocationListPage> {
                                                   if (snapshot
                                                           .connectionState ==
                                                       ConnectionState.waiting) {
-                                                    return CircularProgressIndicator(); // Show loading indicator
+                                                    return Text("-"); // Show loading indicator
                                                   } else if (snapshot
                                                       .hasError) {
                                                     return Text(
@@ -256,11 +274,11 @@ class _LocationListPageState extends State<LocationListPage> {
                                                     subtitle: Text(
                                                       Jiffy.parse(location_list[
                                                               'time'])
-                                                          // .format(
-                                                          //     pattern:
-                                                          //         'MMMM do yyyy, h:mm:ss a')
                                                           .format(
-                                                              pattern: 'h:mm')
+                                                              pattern:
+                                                                  'MMMM do yyyy, h:mm:ss')
+                                                          // .format(
+                                                          //     pattern: 'h:mm')
                                                           .toString(),
                                                     ),
                                                     // subtitle: Text(
@@ -280,10 +298,14 @@ class _LocationListPageState extends State<LocationListPage> {
                                                                 location_list[
                                                                     'lon']));
                                                       });
+                                                      final bitmapIcon = await BitmapDescriptor.fromAssetImage(
+                                                          ImageConfiguration(size: Size(64, 64)),
+                                                          'assets/images/location_blue.png');
                                                       final marker = Marker(
                                                         markerId: MarkerId(
                                                             "initial_marker"),
-                                                        position: _center,
+                                                        position: _center!,
+                                                        icon: bitmapIcon,
                                                         infoWindow: InfoWindow(
                                                           title: Jiffy.parse(
                                                                   location_list[
@@ -299,7 +321,7 @@ class _LocationListPageState extends State<LocationListPage> {
                                                         controller!.animateCamera(
                                                             CameraUpdate
                                                                 .newLatLngZoom(
-                                                                    _center,
+                                                                    _center!,
                                                                     15));
 
                                                         _markers[

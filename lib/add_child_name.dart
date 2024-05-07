@@ -116,18 +116,18 @@ class _AddChildNameState extends State<AddChildName> {
                               _handleGenderChange('qiz');
                             },
                           ),
-                          ListTile(
-                            title: const Text('Boshqa'),
-                            leading: Radio<String>(
-                              activeColor: Colors.blue,
-                              value: 'boshqa',
-                              groupValue: _gender,
-                              onChanged: (value) {},
-                            ),
-                            onTap: () {
-                              _handleGenderChange('boshqa');
-                            },
-                          ),
+                          // ListTile(
+                          //   title: const Text('Boshqa'),
+                          //   leading: Radio<String>(
+                          //     activeColor: Colors.blue,
+                          //     value: 'boshqa',
+                          //     groupValue: _gender,
+                          //     onChanged: (value) {},
+                          //   ),
+                          //   onTap: () {
+                          //     _handleGenderChange('boshqa');
+                          //   },
+                          // ),
                         ],
                       ),
                     ],

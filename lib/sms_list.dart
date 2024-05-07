@@ -80,7 +80,9 @@ class _SmsListPageState extends State<SmsListPage> {
                         ? Center(
                             child: Text("Пустой"),
                           )
-                        : Expanded(
+                        :
+                    // Text(""),
+                Expanded(
                             child: ListView.builder(
                                 itemCount: sms!.length,
                                 itemBuilder: (context, index) {

@@ -14,6 +14,7 @@ import 'package:soqchi/app_list.dart';
 import 'package:soqchi/call_list.dart';
 import 'package:soqchi/contact_list.dart';
 import 'package:soqchi/location_list.dart';
+import 'package:soqchi/notif_list.dart';
 import 'package:soqchi/poster_help/post_helper.dart';
 import 'package:soqchi/sms_list.dart';
 
@@ -219,7 +220,7 @@ class _ChildInformationPageState extends State<ChildInformationPage> {
                                 children: <Widget>[
                                   ListTile(
                                     leading: Icon(
-                                      Icons.location_history,
+                                      Icons.location_on,
                                       color: Colors.blue,
                                     ),
                                     title: Text(
@@ -247,6 +248,40 @@ class _ChildInformationPageState extends State<ChildInformationPage> {
                                           MaterialPageRoute(
                                               builder: (context) =>
                                                   LocationListPage(
+                                                    childuid: widget.childuid,
+                                                  )));
+                                    },
+                                  ),
+                                  ListTile(
+                                    leading: Icon(
+                                      Icons.notifications,
+                                      color: Colors.blue,
+                                    ),
+                                    title: Text(
+                                      'Notification',
+                                      style: TextStyle(
+                                          fontWeight: FontWeight.bold),
+                                    ),
+                                    subtitle: Text('Notification tarixi'),
+                                    trailing: Wrap(
+                                      children: <Widget>[
+                                        Text(
+                                          "${counts['notif_count']}",
+                                          style: TextStyle(fontSize: 16),
+                                        ),
+                                        SizedBox(
+                                          width: 10,
+                                        ),
+                                        Icon(
+                                          Icons.navigate_next,
+                                        ),
+                                      ],
+                                    ),
+                                    onTap: () {
+                                      Navigator.of(context).push(
+                                          MaterialPageRoute(
+                                              builder: (context) =>
+                                                  NotificationListPage(
                                                     childuid: widget.childuid,
                                                   )));
                                     },
@@ -363,8 +398,7 @@ class _ChildInformationPageState extends State<ChildInformationPage> {
                                     ),
                                     subtitle: Text(
                                       'Kontaktlar ro`yxati',
-                                      style: TextStyle(
-                                          fontWeight: FontWeight.bold),
+
                                     ),
                                     trailing: Wrap(
                                       children: <Widget>[

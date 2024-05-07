@@ -110,8 +110,9 @@ class _CallListPageState extends State<CallListPage> {
                                               Jiffy.parse(
                                                   DateTime.now().toString()))),
                                       leading: Icon(
-                                        Icons.call_missed_outgoing,
-                                        color: Colors.red,
+                                        call_list['type'] == 0 ?
+                                        Icons.call_received : call_list['type'] == 1 ? Icons.call_made : call_list['type'] == 2 ? Icons.call_received : Icons.call,
+                                        color:  call_list['type'] == 4 ?  Colors.red : Colors.green,
                                         size: 20,
                                       ),
                                       subtitle: Row(
