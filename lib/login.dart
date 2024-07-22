@@ -8,6 +8,8 @@ import 'package:soqchi/login_otp.dart';
 import 'package:soqchi/poster_help/post_helper.dart';
 import 'dart:convert';
 
+import 'screen/dash.dart';
+
 class LoginPage extends StatefulWidget {
   const LoginPage({super.key});
 
@@ -90,6 +92,40 @@ class _LoginPageState extends State<LoginPage> {
     // }
   }
 
+  Future<void> google_sign() async {
+
+
+    userCredential.value = await signInWithGoogle();
+    if (userCredential.value != null) {
+      // print(userCredential.value);
+      var user_email = userCredential.value.user!.email;
+      var name = userCredential.value.user!.displayName;
+      var user_id = userCredential.value.user!.uid;
+      Map data = {'email': user_email, 'password': user_id, 'name': name};
+      var response = await post_helper(data, '/register');
+      if (response != "Error") {
+        var data = jsonDecode(response);
+        print(data);
+        // final Map parsed = json.decode(response);
+
+        if (data['status'] ||
+            data['message']
+                .toString()
+                .contains('The email has already been taken.')) {
+          final SharedPreferences prefs = await _prefs;
+          prefs.setBool("regstatus", true);
+          prefs.setString("email", user_email);
+          prefs.setString("uid", user_id);
+          prefs.setString("tarif", "free");
+          Navigator.pushReplacement(context,
+              MaterialPageRoute(builder: (context) {
+            return DashboardPage();
+          }));
+        }
+      }
+    }
+  }
+
   @override
   Widget build(BuildContext context) {
     final TextEditingController controller = TextEditingController();
@@ -97,7 +133,7 @@ class _LoginPageState extends State<LoginPage> {
     PhoneNumber number = PhoneNumber(isoCode: 'UZ');
 
     return Scaffold(
-        backgroundColor: Colors.grey[200],
+        backgroundColor: Colors.white,
         body: SafeArea(
             child: ValueListenableBuilder(
                 valueListenable: userCredential,
@@ -121,7 +157,7 @@ class _LoginPageState extends State<LoginPage> {
                                         CrossAxisAlignment.start,
                                     children: [
                                       Text(
-                                        "Telefon raqamingizni kiriting",
+                                        "Family Secure tizimga kirish!",
                                         style: TextStyle(
                                           fontWeight: FontWeight.bold,
                                           fontSize: 28,
@@ -131,78 +167,79 @@ class _LoginPageState extends State<LoginPage> {
                                         height: 15,
                                       ),
                                       Text(
-                                        "Bu tizimga kirishingiz uchun zarur",
+                                        "Dasturdan foydalanish uchun ro'yxatdan o'ting!",
                                         style: TextStyle(
                                           fontSize: 16,
                                         ),
                                       ),
                                     ],
                                   ),
-                                  SizedBox(
-                                    height: MediaQuery.of(context).size.height *
-                                        0.1,
-                                  ),
-                                  InternationalPhoneNumberInput(
-                                    countries: ["UZ"],
-                                    autoFocus: true,
-                                    onInputChanged: (PhoneNumber number) {
-                                      print(number.phoneNumber);
-                                      print(number.phoneNumber!.length);
-                                      print(isvalidate);
-                                      if (number.phoneNumber!.length == 13 &&
-                                          isvalidate) {
-                                        setState(() {
-                                          phone_number = number.phoneNumber!;
-                                          next_btn = true;
-                                        });
-                                      } else {
-                                        setState(() {
-                                          next_btn = false;
-                                        });
-                                      }
-                                    },
-                                    onInputValidated: (bool value) {
-                                      print(value);
-                                      setState(() {
-                                        isvalidate = true;
-                                      });
-                                    },
-                                    selectorConfig: SelectorConfig(
-                                      selectorType:
-                                          PhoneInputSelectorType.BOTTOM_SHEET,
-                                    ),
-                                    hintText: "Telefon raqamingiz",
-                                    ignoreBlank: false,
-                                    autoValidateMode: AutovalidateMode.disabled,
-                                    selectorTextStyle: TextStyle(
-                                        fontSize: 20,
-                                        fontWeight: FontWeight.bold),
-                                    textStyle: TextStyle(
-                                        fontSize: 20,
-                                        fontWeight: FontWeight.bold),
-                                    initialValue: number,
-                                    textFieldController: controller,
-                                    formatInput: true,
-                                    keyboardType:
-                                        TextInputType.numberWithOptions(
-                                            signed: true, decimal: true),
-                                    // inputBorder: OutlineInputBorder(),
-                                    inputBorder: OutlineInputBorder(
-                                        borderRadius: BorderRadius.circular(12),
-                                        borderSide: BorderSide.none),
-
-                                    onSaved: (PhoneNumber number) {
-                                      // number.toString()
-                                      // print(number.toString());
-                                      // print('On Saved: $number');
-                                    },
-                                  ),
+                                  // SizedBox(
+                                  //   height: MediaQuery.of(context).size.height *
+                                  //       0.05,
+                                  // ),
+                                  // InternationalPhoneNumberInput(
+                                  //   countries: ["UZ"],
+                                  //   autoFocus: true,
+                                  //   onInputChanged: (PhoneNumber number) {
+                                  //     print(number.phoneNumber);
+                                  //     print(number.phoneNumber!.length);
+                                  //     print(isvalidate);
+                                  //     if (number.phoneNumber!.length == 13 &&
+                                  //         isvalidate) {
+                                  //       setState(() {
+                                  //         phone_number = number.phoneNumber!;
+                                  //         next_btn = true;
+                                  //       });
+                                  //     } else {
+                                  //       setState(() {
+                                  //         next_btn = false;
+                                  //       });
+                                  //     }
+                                  //   },
+                                  //   onInputValidated: (bool value) {
+                                  //     print(value);
+                                  //     setState(() {
+                                  //       isvalidate = true;
+                                  //     });
+                                  //   },
+                                  //   selectorConfig: SelectorConfig(
+                                  //     selectorType:
+                                  //         PhoneInputSelectorType.BOTTOM_SHEET,
+                                  //   ),
+                                  //   hintText: "Telefon raqamingiz",
+                                  //   ignoreBlank: false,
+                                  //   autoValidateMode: AutovalidateMode.disabled,
+                                  //   selectorTextStyle: TextStyle(
+                                  //       fontSize: 20,
+                                  //       fontWeight: FontWeight.bold),
+                                  //   textStyle: TextStyle(
+                                  //       fontSize: 20,
+                                  //       fontWeight: FontWeight.bold),
+                                  //   initialValue: number,
+                                  //   textFieldController: controller,
+                                  //   formatInput: true,
+                                  //   keyboardType:
+                                  //       TextInputType.numberWithOptions(
+                                  //           signed: true, decimal: true),
+                                  //   // inputBorder: OutlineInputBorder(),
+                                  //   inputBorder: OutlineInputBorder(
+                                  //       borderRadius: BorderRadius.circular(12),
+                                  //       borderSide: BorderSide.none),
+                                  //
+                                  //   onSaved: (PhoneNumber number) {
+                                  //     // number.toString()
+                                  //     // print(number.toString());
+                                  //     // print('On Saved: $number');
+                                  //   },
+                                  // ),
                                 ],
                               ),
+                              Image.asset('assets/images/sign.jpg'),
                               Column(
                                 children: [
                                   Text(
-                                    "Davom etish tugmasini bosish orqali siz ommaviy oferta shartlariga roziligingizni bildirasiz",
+                                    "Google orqali kirish tugmasini bosish orqali siz ommaviy oferta shartlariga roziligingizni bildirasiz",
                                     style: TextStyle(
                                         color: Colors.grey, fontSize: 12),
                                   ),
@@ -217,11 +254,13 @@ class _LoginPageState extends State<LoginPage> {
                                               0.07,
                                       child: ElevatedButton(
                                         style: ButtonStyle(
-                                          backgroundColor: next_btn == true
-                                              ? MaterialStateProperty.all(
-                                                  Colors.blueAccent)
-                                              : MaterialStateProperty.all(
-                                                  Colors.grey),
+                                          backgroundColor: MaterialStateProperty.all(
+                                          Colors.blueAccent),
+                                          // backgroundColor: next_btn == true
+                                          //     ? MaterialStateProperty.all(
+                                          //         Colors.blueAccent)
+                                          //     : MaterialStateProperty.all(
+                                          //         Colors.grey),
                                           shape: MaterialStateProperty.all<
                                               RoundedRectangleBorder>(
                                             RoundedRectangleBorder(
@@ -230,11 +269,14 @@ class _LoginPageState extends State<LoginPage> {
                                             ),
                                           ),
                                         ),
-                                        onPressed: next_btn == true
-                                            ? () => send_phone(phone_number)
-                                            : () {},
+                                        // onPressed: next_btn == true
+                                        //     ? () => send_phone(phone_number)
+                                        //     : () {},
+                                        onPressed: () async{
+                                          await google_sign();
+                                        },
                                         child: Text(
-                                          "Davom etish",
+                                          "Google orqali kirish",
                                           style: TextStyle(
                                               color: Colors.white,
                                               fontSize: 18),

@@ -1,0 +1,172 @@
+import 'package:flutter/material.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:in_app_purchase/in_app_purchase.dart';
+import 'package:pull_to_refresh/pull_to_refresh.dart';
+import 'package:shared_preferences/shared_preferences.dart';
+
+import '../payment/purchase_bloc.dart';
+
+
+class ParentSubscribePage extends StatefulWidget {
+  const ParentSubscribePage({super.key});
+
+  @override
+  State<ParentSubscribePage> createState() => _ParentSubscribePageState();
+}
+
+class _ParentSubscribePageState extends State<ParentSubscribePage> {
+
+  final InAppPurchase _inAppPurchase = InAppPurchase.instance;
+
+  List<ProductDetails>? _products;
+
+  List<PurchaseDetails> _purchases = [];
+  @override
+  void initState(){
+    super.initState();
+    _inAppPurchase.purchaseStream.listen((purchaseDetailsList) {
+      _listenToPurchaseUpdated(purchaseDetailsList);
+    });
+  }
+
+
+  Future<void> _onRefresh() async {
+    setState(() {
+      _products = null;
+    });
+    const Set<String> _kIds = <String>{'monthly','yearly'};
+    final ProductDetailsResponse response =
+    await _inAppPurchase.queryProductDetails(_kIds);
+    if (response.error != null) {
+
+    }
+
+    setState(() {
+      _products = response.productDetails;
+    });
+    _refreshController.refreshCompleted();
+  }
+
+
+  void _listenToPurchaseUpdated(List<PurchaseDetails> purchaseDetailsList) async {
+    _purchases = purchaseDetailsList;
+    for (var purchaseDetails in purchaseDetailsList) {
+      if (purchaseDetails.status == PurchaseStatus.purchased) {
+        final prefs = await SharedPreferences.getInstance();
+        final String purchaseToken = purchaseDetails.verificationData.serverVerificationData;
+        final String product_id = purchaseDetails.productID;
+        await prefs.setBool('is_subscribed', true);
+        prefs.setString("tarif", product_id);
+        // add(CheckSubscription());
+      } else if (purchaseDetails.status == PurchaseStatus.error) {
+        // add(CheckSubscription());
+      }
+      else if (purchaseDetails.status == PurchaseStatus.restored) {
+        print("Restart qilindi");
+        // add(CheckSubscription());
+      }
+    }
+  }
+
+  Future<void> _onPurchaseProduct(String product_id) async {
+    final product = _products!.firstWhere((product) => product.id == product_id);
+    final PurchaseParam purchaseParam = PurchaseParam(productDetails: product);
+    _inAppPurchase.buyNonConsumable(purchaseParam: purchaseParam);
+  }
+
+  RefreshController _refreshController =
+  RefreshController(initialRefresh: true);
+
+  @override
+  Widget build(BuildContext context) {
+    return Scaffold(
+      backgroundColor: Colors.white,
+      appBar: AppBar(
+        leading: IconButton(
+          icon: Icon(
+            Icons.arrow_back_ios,
+            color: Colors.black,
+          ),
+          onPressed: () {
+            Navigator.pop(context);
+          },
+        ),
+      ),
+      body:SmartRefresher(
+        controller: _refreshController,
+        onRefresh: _onRefresh,
+        child: _products == null ? SizedBox():_products!.isEmpty ? Center(child:Text("Empty")):Padding(
+                padding: const EdgeInsets.all(8.0),
+                child: Column(
+                  mainAxisAlignment: MainAxisAlignment.center,
+                  crossAxisAlignment: CrossAxisAlignment.center,
+                  children: [
+                    Text("Subscribe to Premium",style: TextStyle(fontSize: 30,color: Colors.blue,fontWeight: FontWeight.bold),),
+                    Padding(
+                      padding: const EdgeInsets.all(12.0),
+                      child: Text("Subscribe to Premium Subscribe to Premium Subscribe to Premium",style: TextStyle(fontSize: 14,color: Colors.black),textAlign:TextAlign.center),
+                    ),
+                    Expanded(
+                      child: ListView.builder(
+                        itemCount: _products!.length,
+                        itemBuilder: (context, index) {
+                          final product = _products![index];
+                          return InkWell(
+                            onTap: ()async{
+                              print(product.id);
+                              await _onPurchaseProduct(product.id);
+                            },
+                            child: Card(
+                              margin: EdgeInsets.all(15),
+                              color: Colors.blueAccent,
+                              child: Padding(
+                                padding: const EdgeInsets.all(8.0),
+                                child: Column(
+
+                                  mainAxisAlignment: MainAxisAlignment.center,
+                                  crossAxisAlignment: CrossAxisAlignment.center,
+                                  children: [
+                                    Padding(
+                                      padding: const EdgeInsets.all(10.0),
+                                      child: Icon(Icons.star,size: 50,color: Colors.yellowAccent,),
+                                    ),
+                                    Padding(
+                                      padding: const EdgeInsets.all(10.0),
+                                      child: Text("Plan:"+product.description,style: TextStyle(color: Colors.white,fontSize: 29,fontWeight: FontWeight.bold),),
+                                    ),
+                                    Padding(
+                                      padding: const EdgeInsets.all(10.0),
+                                      child: Text(product.price,style: TextStyle(color: Colors.white,fontSize: 29,fontWeight: FontWeight.bold,fontStyle:FontStyle.italic),),
+                                    ),
+                                    SizedBox(height: 10,),
+
+                                    // Padding(
+                                    //   padding: const EdgeInsets.all(15.0),
+                                    //   child: ListTile(
+                                    //     title: Text(product.description,style: TextStyle(color: Colors.white),),
+                                    //     // subtitle: Text(product.description),
+                                    //     trailing: TextButton(
+                                    //       child: Text(product.price),
+                                    //       onPressed: () {
+                                    //         context
+                                    //             .read<PurchaseBloc>()
+                                    //             .add(PurchaseProduct(product.id));
+                                    //       },
+                                    //     ),
+                                    //   ),
+                                    // ),
+                                  ],
+                                ),
+                              ),
+                            ),
+                          );
+                        },
+                      ),
+                    ),
+                  ],
+                ),
+        ),
+      )
+    );
+  }
+}

@@ -4,7 +4,7 @@ import 'package:flutter/material.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:soqchi/childs_list.dart';
 import 'package:soqchi/components/dialogs.dart';
-import 'package:soqchi/dash.dart';
+import 'package:soqchi/screen/dash.dart';
 import 'package:soqchi/poster_help/post_helper.dart';
 
 class RegisterPage extends StatefulWidget {

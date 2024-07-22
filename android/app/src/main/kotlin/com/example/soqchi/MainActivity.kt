@@ -1,4 +1,4 @@
-package com.yorqinbek.soqchi
+package uz.bbpro.familysecure
 
 import io.flutter.embedding.android.FlutterActivity
 

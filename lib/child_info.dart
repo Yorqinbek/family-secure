@@ -2,11 +2,11 @@ import 'dart:async';
 
 import 'package:flutter/material.dart';
 import 'package:google_maps_flutter/google_maps_flutter.dart';
-import 'package:soqchi/app_list.dart';
-import 'package:soqchi/call_list.dart';
-import 'package:soqchi/contact_list.dart';
-import 'package:soqchi/location_list.dart';
-import 'package:soqchi/sms_list.dart';
+import 'package:soqchi/screen/app_list.dart';
+import 'package:soqchi/screen/call_list.dart';
+import 'package:soqchi/screen/contact_list.dart';
+import 'package:soqchi/screen/location_list.dart';
+import 'package:soqchi/screen/sms_list.dart';
 
 class ChildInfoPage extends StatefulWidget {
   final String childuid;

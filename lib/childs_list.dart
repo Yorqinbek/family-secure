@@ -4,13 +4,13 @@ import 'package:permission_handler/permission_handler.dart';
 import 'package:pull_to_refresh/pull_to_refresh.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:soqchi/add_child.dart';
-import 'package:soqchi/add_child_name.dart';
+import 'package:soqchi/screen/add_child_name.dart';
 import 'package:soqchi/child_info.dart';
 import 'package:soqchi/login.dart';
 import 'package:soqchi/poster_help/post_helper.dart';
 import 'dart:convert';
 
-import 'package:soqchi/settings.dart';
+import 'package:soqchi/screen/settings.dart';
 
 class ChildListPage extends StatefulWidget {
   const ChildListPage({super.key});

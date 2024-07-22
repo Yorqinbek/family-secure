@@ -46,10 +46,30 @@ class MyCustomDialogs {
     );
   }
 
+  static Widget server_conn_err(){
+    return
+          Center(
+            child: Text("Ошибка подключения к серверу!",style: TextStyle(fontSize: 16),),
+          );
+  }
+
+  static Widget LoadingWidget(){
+    return const Center(
+      child: Padding(
+        padding: EdgeInsets.all(4.0),
+        child: SizedBox(
+          height: 30,
+          width: 30,
+          child: CircularProgressIndicator(),
+        ),
+      ),
+    );
+  }
+
   static my_showAlertDialog(BuildContext context) {
     return showDialog(
       context: context,
-      barrierDismissible: false, // user must tap button!
+      barrierDismissible: false,
       builder: (BuildContext context) {
         return AlertDialog(
           backgroundColor: Colors.transparent,

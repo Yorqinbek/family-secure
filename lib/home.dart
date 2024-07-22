@@ -240,7 +240,7 @@ class _HomePageState extends State<HomePage> {
                                                   // ),
                                                 ],
                                               ),
-                                              subtitle: Text("o'g'lim"),
+                                              subtitle: Text("child"),
                                               // subtitle: Text(
                                               //     location_list['lat'] +
                                               //         "," +

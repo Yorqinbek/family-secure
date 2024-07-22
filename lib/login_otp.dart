@@ -7,7 +7,7 @@ import 'package:intl_phone_number_input/intl_phone_number_input.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:soqchi/childs_list.dart';
 import 'package:soqchi/components/dialogs.dart';
-import 'package:soqchi/dash.dart';
+import 'package:soqchi/screen/dash.dart';
 import 'package:soqchi/poster_help/post_helper.dart';
 import 'dart:convert';
 
