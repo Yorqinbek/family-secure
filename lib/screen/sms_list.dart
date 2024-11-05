@@ -17,7 +17,7 @@ import 'package:soqchi/widgets/EmptyListWidget.dart';
 import '../components/dialogs.dart';
 import '../widgets/loadingwidget.dart';
 import '../widgets/upgradewidget.dart';
-
+import 'package:flutter_gen/gen_l10n/app_localizations.dart';
 class SmsListPage extends StatefulWidget {
   final String childuid;
   const SmsListPage({super.key, required this.childuid});
@@ -76,7 +76,7 @@ class _SmsListPageState extends State<SmsListPage> {
     return Scaffold(
       appBar: AppBar(
         centerTitle: true, // this is all you need
-        title: Text("Сообщения"),
+        title: Text(AppLocalizations.of(context)!.sms,),
         leading: IconButton(
           icon: Icon(
             Icons.arrow_back_ios,

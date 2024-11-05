@@ -13,7 +13,7 @@ import 'package:soqchi/poster_help/post_helper.dart';
 import '../widgets/EmptyListWidget.dart';
 import '../widgets/loadingwidget.dart';
 import '../widgets/upgradewidget.dart';
-
+import 'package:flutter_gen/gen_l10n/app_localizations.dart';
 class ContactListPage extends StatefulWidget {
   final String childuid;
   const ContactListPage({super.key, required this.childuid});
@@ -52,12 +52,13 @@ class _ContactListPageState extends State<ContactListPage> {
   }
 
   @override
-  void initState() {
+  void initState(){
     // TODO: implement initState
     super.initState();
     BlocProvider.of<ChildContactBloc>(context).add(GetChildContactEvent(childuid: widget.childuid));
     _scrollController.addListener(_onScroll);
   }
+
 
   @override
   void dispose() {
@@ -90,7 +91,7 @@ class _ContactListPageState extends State<ContactListPage> {
     return Scaffold(
       appBar: AppBar(
         centerTitle: true, // this is all you need
-        title: Text("Контакты"),
+        title: Text(AppLocalizations.of(context)!.contacts,),
         leading: IconButton(
           icon: Icon(
             Icons.arrow_back_ios,

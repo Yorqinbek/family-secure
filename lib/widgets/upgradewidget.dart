@@ -1,8 +1,11 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:soqchi/screen/payment_type.dart';
 
+import '../bloc/subscript/subscript_bloc.dart';
 import '../payment/purchase_bloc.dart';
 import '../screen/subscription.dart';
+import 'package:flutter_gen/gen_l10n/app_localizations.dart';
 
 class UpgradeWidget extends StatefulWidget {
   const UpgradeWidget({super.key});
@@ -17,7 +20,7 @@ class _UpgradeWidgetState extends State<UpgradeWidget> {
     return Center(
       child: Column(
         children: [
-          Text("Bepul obuna tugadi!",style: TextStyle(color: Colors.black,fontSize: 22,fontWeight: FontWeight.bold),),
+          Text(AppLocalizations.of(context)!.free_subsr_over,style: TextStyle(color: Colors.black,fontSize: 22,fontWeight: FontWeight.bold),),
           SizedBox(height: MediaQuery.of(context).size.height*0.03,),
           Icon(Icons.lock,color: Colors.red,size: 70,),
           SizedBox(height: MediaQuery.of(context).size.height*0.03,),
@@ -36,14 +39,24 @@ class _UpgradeWidgetState extends State<UpgradeWidget> {
                 onPressed: (){
                   Navigator.push(context, MaterialPageRoute(builder: (context) {
                     return BlocProvider(
-                      create: (ctx) => PurchaseBloc(),
-                      child: ParentSubscribePage(
-                        // childuid: widget.childuid,
+                      create: (ctx) => SubscriptBloc(),
+                      child: PaymentType(
                       ),
                     );
                   }));
+                  // Navigator.push(context, MaterialPageRoute(builder: (context) {
+                  //   return PaymentType();
+                  // }));
+                  // Navigator.push(context, MaterialPageRoute(builder: (context) {
+                  //   return BlocProvider(
+                  //     create: (ctx) => PurchaseBloc(),
+                  //     child: ParentSubscribePage(
+                  //       // childuid: widget.childuid,
+                  //     ),
+                  //   );
+                  // }));
                 },
-                child: Text("Yangilash",style: TextStyle(fontSize: 20,color: Colors.white,fontWeight: FontWeight.bold),)
+                child: Text(AppLocalizations.of(context)!.update,style: TextStyle(fontSize: 20,color: Colors.white,fontWeight: FontWeight.bold),)
             ),
           )
         ],

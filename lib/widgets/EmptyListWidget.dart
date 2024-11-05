@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_gen/gen_l10n/app_localizations.dart';
 
 class EmptyListWidget extends StatefulWidget {
   const EmptyListWidget({super.key});
@@ -10,8 +11,8 @@ class EmptyListWidget extends StatefulWidget {
 class _EmptyListWidgetState extends State<EmptyListWidget> {
   @override
   Widget build(BuildContext context) {
-    return const Center(
-      child: Text("Empty"),
+    return Center(
+      child: Text(AppLocalizations.of(context)!.information_not_found,style: TextStyle(fontSize: 16),),
     );
   }
 }

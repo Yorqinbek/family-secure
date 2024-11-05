@@ -13,6 +13,7 @@ import 'package:pull_to_refresh/pull_to_refresh.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:soqchi/bloc/childapp/child_app_list_bloc.dart';
 import 'package:soqchi/bloc/childappusage/child_app_usage_bloc.dart';
+import 'package:soqchi/bloc/childwebblock/child_web_bloc.dart';
 import 'package:soqchi/screen/app_list.dart';
 import 'package:soqchi/bloc/childcall/child_call_bloc.dart';
 import 'package:soqchi/bloc/childcontact/child_contact_bloc.dart';
@@ -25,10 +26,12 @@ import 'package:soqchi/screen/location_list.dart';
 import 'package:soqchi/screen/notif_list.dart';
 import 'package:soqchi/poster_help/post_helper.dart';
 import 'package:soqchi/screen/sms_list.dart';
+import 'package:soqchi/screen/web_block_list.dart';
 import 'package:soqchi/widgets/upgradewidget.dart';
 
 import '../bloc/childinfo/child_info_bloc.dart';
 import '../widgets/loadingwidget.dart';
+import 'package:flutter_gen/gen_l10n/app_localizations.dart';
 
 class ChildInformationPage extends StatefulWidget {
   final String childuid;
@@ -64,95 +67,16 @@ class _ChildInformationPageState extends State<ChildInformationPage> {
 
   int active_index = 0;
 
+  int online = -1;
+
   @override
   void initState() {
     super.initState();
     BlocProvider.of<ChildInfoBloc>(context).add(ChildInfoLoadingData(childuid: widget.childuid));
-
-    // _onRefresh();
   }
 
-  // Future<void> _onRefresh() async {
-  //   final SharedPreferences prefs = await _prefs;
-  //   String token = prefs.getString('bearer_token') ?? '';
-  //   Map data = {'chid': widget.childuid};
-  //
-  //   String response = await post_helper_token(data, '/getchildinfo', token);
-  //
-  //   if (response != "Error") {
-  //     final Map response_json = json.decode(response);
-  //     if (response_json['status']) {
-  //       if (response_json['loc'] != null) {
-  //         final bitmapIcon = await BitmapDescriptor.fromAssetImage(
-  //             ImageConfiguration(size: Size(64, 64)),
-  //             'assets/images/location_blue.png');
-  //         List<Placemark> placemarks = await placemarkFromCoordinates(
-  //             double.parse(response_json['loc']['lat']),
-  //             double.parse(response_json['loc']['lon']));
-  //         Placemark place = placemarks[0]; // Taking the first returned result
-  //         print(
-  //             "Qani:${place.locality}, ${place.postalCode}, ${place.country}");
-  //         setState(() {
-  //           counts = response_json['counts'];
-  //           _center = LatLng(double.parse(response_json['loc']['lat']),
-  //               double.parse(response_json['loc']['lon']));
-  //           final marker = Marker(
-  //             markerId: MarkerId("initial_marker"),
-  //             position: _center,
-  //             icon: bitmapIcon,
-  //             infoWindow: InfoWindow(
-  //                 title: "${place.locality}, ${place.name}, ${place.country}",
-  //                 snippet: "${response_json['loc']['time']}"),
-  //           );
-  //           setState(() {
-  //             _markers["initial_marker"] = marker;
-  //           });
-  //         });
-  //       } else {
-  //         print('lokatsiya yoq');
-  //       }
-  //     }
-  //   } else {
-  //     print('response Error');
-  //   }
-  //
-  //   // await Jiffy.setLocale('ru');
-  //   // final SharedPreferences prefs = await _prefs;
-  //   // String token = prefs.getString('bearer_token') ?? '';
-  //
-  //   // Map data = {'chuid': widget.childuid};
-  //
-  //   // String response =
-  //   //     await post_helper_token(data, '/getchildlocations', token);
-  //   // if (response != "Error") {
-  //   //   final Map response_json = json.decode(response);
-  //   //   if (response_json['status']) {
-  //   //     setState(() {
-  //   //       locations = response_json['locations'];
-  //   //     });
-  //   //     if (locations != null && !locations!.isEmpty) {
-  //   //       Map<String, dynamic> location_list = locations![0];
-  //   //       setState(() {
-  //   //         _center = LatLng(double.parse(location_list['lat']),
-  //   //             double.parse(location_list['lon']));
-  //   //         final marker = Marker(
-  //   //           markerId: MarkerId("initial_marker"),
-  //   //           position: _center,
-  //   //           infoWindow: InfoWindow(
-  //   //               title: "Initial Marker", snippet: "An interesting location"),
-  //   //         );
-  //   //         setState(() {
-  //   //           _markers["initial_marker"] = marker;
-  //   //         });
-  //   //       });
-  //   //     }
-  //   //   }
-  //   // } else {
-  //   //   print('response Error');
-  //   // }
-  //
-  //   _refreshController.refreshCompleted();
-  // }
+  LatLng? child_latlong;
+
   @override
   Widget build(BuildContext context) {
 
@@ -162,9 +86,36 @@ class _ChildInformationPageState extends State<ChildInformationPage> {
       appBar: AppBar(
         backgroundColor: Colors.white,
         centerTitle: true, // this is all you need
-        title: Text(
-          widget.name,
+        title: Column(
+          mainAxisAlignment: MainAxisAlignment.center,
+          children: [
+            Text(
+              widget.name,
+              style: TextStyle(fontSize: 20)
+            ),
+            online == -1 ? SizedBox() : online == 1 ? Text(AppLocalizations.of(context)!.online,style: TextStyle(fontSize: 12,color: Colors.blue)):Text(AppLocalizations.of(context)!.offline,style: TextStyle(fontSize: 12,color: Colors.red))
+          ],
         ),
+        actions: [
+          IconButton(onPressed: (){
+            controller!.animateCamera(
+                CameraUpdate
+                    .newLatLngZoom(
+                    child_latlong!,
+                    15));
+
+
+          }, icon: Icon(Icons.location_on,color:  Colors.blue,)),
+          IconButton(onPressed: (){
+            setState(() {
+              online = -1;
+            });
+            BlocProvider.of<ChildInfoBloc>(context).add(ChildInfoLoadingData(childuid: widget.childuid));
+
+          }, icon: Icon(Icons.refresh,color:  Colors.blue,)),
+
+
+        ],
         leading: IconButton(
           icon: Icon(
             Icons.arrow_back_ios,
@@ -179,6 +130,10 @@ class _ChildInformationPageState extends State<ChildInformationPage> {
         child: BlocBuilder<ChildInfoBloc, ChildInfoState>(
           builder: (ctx, state)  {
             if(state is ChildInfoSuccess){
+              child_latlong = LatLng(double.parse("${state.childInfoModel.loc?.lat}"),
+                  double.parse("${state.childInfoModel.loc?.lon}"));
+              online = state.childInfoModel.online!;
+              print(online);
         return Stack(
           children: [
             Column(
@@ -188,6 +143,7 @@ class _ChildInformationPageState extends State<ChildInformationPage> {
                     width: MediaQuery.of(context).size.width,
                     height: MediaQuery.of(context).size.height * 0.50,
                     child: GoogleMap(
+
                       circles: state.circles,
                       tiltGesturesEnabled: true,
                       myLocationEnabled: true,
@@ -203,7 +159,7 @@ class _ChildInformationPageState extends State<ChildInformationPage> {
                       markers: {
                          state.marker
                       },
-                      myLocationButtonEnabled: false,
+                      myLocationButtonEnabled: true,
                       onMapCreated: _onMapCreated,
                       gestureRecognizers: Set()
                         ..add(Factory<PanGestureRecognizer>(
@@ -237,11 +193,11 @@ class _ChildInformationPageState extends State<ChildInformationPage> {
                             color: Colors.blue,
                           ),
                           title: Text(
-                            'Geolocations',
+                            AppLocalizations.of(context)!.geolocation,
                             style: TextStyle(
                                 fontWeight: FontWeight.bold),
                           ),
-                          subtitle: Text('Geolocations history'),
+                          subtitle: Text(AppLocalizations.of(context)!.geolocation_history),
                           trailing: Wrap(
                             children: <Widget>[
                               Text(
@@ -276,19 +232,19 @@ class _ChildInformationPageState extends State<ChildInformationPage> {
                         ),
                         ListTile(
                           leading: Icon(
-                            Icons.notifications,
+                            Icons.apps,
                             color: Colors.blue,
                           ),
                           title: Text(
-                            'Notification',
+                            AppLocalizations.of(context)!.apps,
                             style: TextStyle(
                                 fontWeight: FontWeight.bold),
                           ),
-                          subtitle: Text('Notification history'),
+                          subtitle: Text(AppLocalizations.of(context)!.apps_sub),
                           trailing: Wrap(
                             children: <Widget>[
                               Text(
-                                "${state.childInfoModel.counts!.notifCount}",
+                                "${state.childInfoModel.counts!.appCount}",
                                 style: TextStyle(fontSize: 16),
                               ),
                               SizedBox(
@@ -300,12 +256,23 @@ class _ChildInformationPageState extends State<ChildInformationPage> {
                             ],
                           ),
                           onTap: () {
+                            // Navigator.of(context)
+                            //     .push(MaterialPageRoute(
+                            //     builder: (context) => AppListPage(
+                            //       childuid: widget.childuid,
+                            //     )));
                             Navigator.push(context, MaterialPageRoute(builder: (context) {
-                              return BlocProvider(
-                                create: (ctx) => ChildNotificationBloc(),
-                                child: NotificationListPage(
+                              return MultiBlocProvider(
+                                providers: [
+                                  BlocProvider(
+                                    create: (ctx) => ChildAppListBloc(),
+                                  ),
+                                  BlocProvider(
+                                    create: (context) => ChildAppUsageBloc(),
+                                  ),
+                                ],
+                                child: AppListPage(
                                   childuid: widget.childuid,
-
                                 ),
                               );
                             }));
@@ -317,11 +284,11 @@ class _ChildInformationPageState extends State<ChildInformationPage> {
                             color: Colors.blue,
                           ),
                           title: Text(
-                            'Calls',
+                            AppLocalizations.of(context)!.calls,
                             style: TextStyle(
                                 fontWeight: FontWeight.bold),
                           ),
-                          subtitle: Text('Call history'),
+                          subtitle: Text(AppLocalizations.of(context)!.calls_sub),
                           trailing: Wrap(
                             children: <Widget>[
                               Text(
@@ -354,11 +321,11 @@ class _ChildInformationPageState extends State<ChildInformationPage> {
                             color: Colors.blue,
                           ),
                           title: Text(
-                            'Sms',
+                            AppLocalizations.of(context)!.sms,
                             style: TextStyle(
                                 fontWeight: FontWeight.bold),
                           ),
-                          subtitle: Text('Sms history'),
+                          subtitle: Text(AppLocalizations.of(context)!.sms_sub),
                           trailing: Wrap(
                             children: <Widget>[
                               Text(
@@ -387,19 +354,19 @@ class _ChildInformationPageState extends State<ChildInformationPage> {
                         ),
                         ListTile(
                           leading: Icon(
-                            Icons.apps,
+                            Icons.language,
                             color: Colors.blue,
                           ),
                           title: Text(
-                            'Apps',
+                            AppLocalizations.of(context)!.web,
                             style: TextStyle(
                                 fontWeight: FontWeight.bold),
                           ),
-                          subtitle: Text('Apps List'),
+                          subtitle: Text(AppLocalizations.of(context)!.web_sub),
                           trailing: Wrap(
                             children: <Widget>[
                               Text(
-                                "${state.childInfoModel.counts!.appCount}",
+                                "${state.childInfoModel.counts!.webCount}",
                                 style: TextStyle(fontSize: 16),
                               ),
                               SizedBox(
@@ -411,23 +378,49 @@ class _ChildInformationPageState extends State<ChildInformationPage> {
                             ],
                           ),
                           onTap: () {
-                            // Navigator.of(context)
-                            //     .push(MaterialPageRoute(
-                            //     builder: (context) => AppListPage(
-                            //       childuid: widget.childuid,
-                            //     )));
                             Navigator.push(context, MaterialPageRoute(builder: (context) {
-                              return MultiBlocProvider(
-                                providers: [
-                                  BlocProvider(
-                                    create: (ctx) => ChildAppListBloc(),
-                                  ),
-                                  BlocProvider(
-                                    create: (context) => ChildAppUsageBloc(),
-                                  ),
-                                ],
-                                child: AppListPage(
-                                childuid: widget.childuid,
+                              return BlocProvider(
+                                create: (ctx) => ChildWebBloc(),
+                                child: WebBlockPage(
+                                  childuid: widget.childuid,
+
+                                ),
+                              );
+                            }));
+                          },
+                        ),
+                        ListTile(
+                          leading: Icon(
+                            Icons.notifications,
+                            color: Colors.blue,
+                          ),
+                          title: Text(
+                            AppLocalizations.of(context)!.notification,
+                            style: TextStyle(
+                                fontWeight: FontWeight.bold),
+                          ),
+                          subtitle: Text(AppLocalizations.of(context)!.notification_sub),
+                          trailing: Wrap(
+                            children: <Widget>[
+                              Text(
+                                "${state.childInfoModel.counts!.notifCount}",
+                                style: TextStyle(fontSize: 16),
+                              ),
+                              SizedBox(
+                                width: 10,
+                              ),
+                              Icon(
+                                Icons.navigate_next,
+                              ),
+                            ],
+                          ),
+                          onTap: () {
+                            Navigator.push(context, MaterialPageRoute(builder: (context) {
+                              return BlocProvider(
+                                create: (ctx) => ChildNotificationBloc(),
+                                child: NotificationListPage(
+                                  childuid: widget.childuid,
+
                                 ),
                               );
                             }));
@@ -439,12 +432,12 @@ class _ChildInformationPageState extends State<ChildInformationPage> {
                             color: Colors.blue,
                           ),
                           title: Text(
-                            'Contacts',
+                            AppLocalizations.of(context)!.contacts,
                             style: TextStyle(
                                 fontWeight: FontWeight.bold),
                           ),
                           subtitle: Text(
-                            'Contact history',
+                            AppLocalizations.of(context)!.contacts_sub,
 
                           ),
                           trailing: Wrap(

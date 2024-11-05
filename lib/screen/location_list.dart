@@ -20,7 +20,7 @@ import 'package:timeline_tile/timeline_tile.dart';
 import '../api/child_location_list_model.dart';
 import '../widgets/EmptyListWidget.dart';
 import '../widgets/loadingwidget.dart';
-
+import 'package:flutter_gen/gen_l10n/app_localizations.dart';
 class LocationListPage extends StatefulWidget {
   final String childuid;
   const LocationListPage({super.key, required this.childuid});
@@ -232,7 +232,7 @@ class _LocationListPageState extends State<LocationListPage> {
           ),
           // IconButton(onPressed: _pickDateDialog, icon: Icon(Icons.date_range,color: Colors.blue,))
         ],
-        title: Text("Joylashuvlar"),
+        title: Text(AppLocalizations.of(context)!.geolocation),
         // backgroundColor: Colors.transparent,
         // centerTitle: true, // this is all you need
         leading: IconButton(
@@ -320,30 +320,32 @@ class _LocationListPageState extends State<LocationListPage> {
                           children: [
                             Padding(
                               padding: const EdgeInsets.only(
-                                  left: 20, top: 20),
+                                  left: 20, top: 10),
                               child: Row(
                                 children: [
                                   Text(
-                                    "Локации",
+                                    AppLocalizations.of(context)!.geolocation,
                                     style: TextStyle(
-                                      fontSize: 20,
+                                      fontSize: 18,
                                       color: Colors.black,
                                       fontWeight: FontWeight.bold,
                                     ),
                                     textAlign: TextAlign.left,
                                   ),
                                   SizedBox(width: MediaQuery.of(context).size.width*0.3,),
-                                  TextButton(
-                                    onPressed: _pickDateDialog,
-                                    child: Text(
-                                      Jiffy.parse(_selectedDate == null ? DateTime.now().toString(): _selectedDate.toString())
-                                          .yMMMMd,
-                                      style: TextStyle(
-                                        fontSize: 20,
-                                        color: Colors.blueAccent,
-                                        fontWeight: FontWeight.bold,
+                                  Flexible(
+                                    child: TextButton(
+                                      onPressed: _pickDateDialog,
+                                      child: Text(
+                                        Jiffy.parse(_selectedDate == null ? DateTime.now().toString(): _selectedDate.toString())
+                                            .yMMMMd,
+                                        style: TextStyle(
+                                          fontSize: 18,
+                                          color: Colors.blueAccent,
+                                          fontWeight: FontWeight.bold,
+                                        ),
+                                        textAlign: TextAlign.left,
                                       ),
-                                      textAlign: TextAlign.left,
                                     ),
                                   ),
                                 ],

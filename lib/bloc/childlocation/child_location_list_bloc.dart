@@ -18,12 +18,42 @@ class ChildLocationListBloc extends Bloc<ChildLocationListEvent, ChildLocationLi
     });
 
     Future<String> get_loca_name(String lat, String lon) async {
+
       List<Placemark> placemarks =
       await placemarkFromCoordinates(double.parse(lat), double.parse(lon));
+
+      var address = '';
+
+      if (placemarks.isNotEmpty) {
+
+        // Concatenate non-null components of the address
+        var streets = placemarks.reversed
+            .map((placemark) => placemark.street)
+            .where((street) => street != null);
+
+        // Filter out unwanted parts
+        streets = streets.where((street) =>
+        street!.toLowerCase() !=
+            placemarks.reversed.last.locality!
+                .toLowerCase()); // Remove city names
+        streets =
+            streets.where((street) => !street!.contains('+')); // Remove street codes
+
+        address += streets.join(', ');
+
+        // address += ', ${placemarks.reversed.last.subLocality ?? ''}';
+        // address += ', ${placemarks.reversed.last.locality ?? ''}';
+        // address += ', ${placemarks.reversed.last.subAdministrativeArea ?? ''}';
+        // address += ', ${placemarks.reversed.last.administrativeArea ?? ''}';
+        // address += ', ${placemarks.reversed.last.postalCode ?? ''}';
+        // address += ', ${placemarks.reversed.last.country ?? ''}';
+      }
+
       Placemark place = placemarks[0];
       // print(placemarks);
       // return "${place.locality}, ${place.name}, ${place.country}";
-      return "${place.subLocality} , ${place.locality}";
+      return address;
+
       // return "${place.subLocality}";
     }
 

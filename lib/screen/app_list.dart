@@ -16,7 +16,7 @@ import 'dart:convert';
 import '../widgets/EmptyListWidget.dart';
 import '../widgets/loadingwidget.dart';
 import '../widgets/upgradewidget.dart';
-
+import 'package:flutter_gen/gen_l10n/app_localizations.dart';
 class AppListPage extends StatefulWidget {
   final String childuid;
   const AppListPage({super.key, required this.childuid});
@@ -69,7 +69,7 @@ class _AppListPageState extends State<AppListPage> with SingleTickerProviderStat
     super.initState();
     _tabController = TabController(length: 2, vsync: this);
     BlocProvider.of<ChildAppListBloc>(context).add(GetChildAppEvent(childuid: widget.childuid));
-    BlocProvider.of<ChildAppUsageBloc>(context).add(GetChildAppUsageEvent(childuid: widget.childuid));
+    BlocProvider.of<ChildAppUsageBloc>(context).add(GetChildAppUsageEvent(childuid: widget.childuid,date: _selectedDate.toString()));
 
     _scrollController.addListener(_onScroll);
     _scrollController2.addListener(_onScroll2);
@@ -104,7 +104,7 @@ class _AppListPageState extends State<AppListPage> with SingleTickerProviderStat
     if (_debounce2?.isActive ?? false) _debounce2!.cancel();
     _debounce2 = Timer(const Duration(milliseconds: 300), () {
       if (_isNearBottom2()) {
-        BlocProvider.of<ChildAppUsageBloc>(context).add(GetChildAppUsageEvent(childuid: widget.childuid));
+        BlocProvider.of<ChildAppUsageBloc>(context).add(GetChildAppUsageEvent(childuid: widget.childuid,date: _selectedDate.toString()));
       }
     });
   }
@@ -172,6 +172,50 @@ class _AppListPageState extends State<AppListPage> with SingleTickerProviderStat
   }
 
   TimeOfDay? _selectedTime;
+
+  DateTime _selectedDate = DateTime.now();
+
+  void _pickDateDialog() {
+    showDatePicker(
+        builder:(context , child){
+          return Theme(  data: Theme.of(context).copyWith(  // override MaterialApp ThemeData
+            colorScheme: ColorScheme.light(
+              primary: Colors.blue,
+              onPrimary: Colors.white,
+              onSurface: Colors.black,
+            ),
+            textButtonTheme: TextButtonThemeData(
+              style: TextButton.styleFrom(
+                primary: Colors.black,
+              ),
+            ),
+          ),  child: child!   );
+        },
+        keyboardType: TextInputType.datetime,
+        context: context,
+
+        initialDate: _selectedDate,
+        //which date will display when user open the picker
+        firstDate: DateTime(1950),
+        //what will be the previous supported year in picker
+        lastDate: DateTime
+            .now()) //what will be the up to supported date in picker
+        .then((pickedDate) {
+      //then usually do the future job
+      if (pickedDate == null) {
+        //if user tap cancel then this function will stop
+        return;
+      }
+      setState(() {
+        //for rebuilding the ui
+        _selectedDate = pickedDate;
+      });
+      BlocProvider.of<ChildAppUsageBloc>(context).add(ReloadChildAppUsageEvent(childuid: widget.childuid,date: _selectedDate.toString()));
+
+      // BlocProvider.of<ChildNotificationBloc>(context).add(ReloadChildNotificationEvent(childuid: widget.childuid,date: _selectedDate.toString()));
+      // print(_selectedDate.toString());
+    });
+  }
   
   
   @override
@@ -183,12 +227,12 @@ class _AppListPageState extends State<AppListPage> with SingleTickerProviderStat
           bottom: TabBar(
             controller: _tabController,
             tabs: [
-              Tab(text: "App list"),
-              Tab(text: "App usage",)
+              Tab(text:AppLocalizations.of(context)!.app_list,),
+              Tab(text: AppLocalizations.of(context)!.app_usage,)
             ],
           ),
           centerTitle: true, // this is all you need
-          title: Text("Программы"),
+          title: Text(AppLocalizations.of(context)!.apps),
           leading: IconButton(
             icon: Icon(
               Icons.arrow_back_ios,
@@ -249,9 +293,9 @@ class _AppListPageState extends State<AppListPage> with SingleTickerProviderStat
                                       //   ),
                                       //   backgroundColor: Colors.grey,
                                       // ),
-                                      subtitle: Text("Дневной лимит: " +
+                                      subtitle: Text(AppLocalizations.of(context)!.app_limit +
                                           state.apps[index].blockTime.toString() +
-                                          " minut"),
+                                          AppLocalizations.of(context)!.minut),
                                       // subtitle: LinearProgressIndicator(
                                       //   value: 50.0,
                                       //   color: Colors.blue,
@@ -291,10 +335,10 @@ class _AppListPageState extends State<AppListPage> with SingleTickerProviderStat
                                                 context: context,
                                                 initialEntryMode:
                                                 TimePickerEntryMode.inputOnly,
-                                                hourLabelText: "час",
+                                                hourLabelText: AppLocalizations.of(context)!.hour,
                                                 helpText:
-                                                "Сколько час и минут блокировать?",
-                                                minuteLabelText: "минут",
+                                                AppLocalizations.of(context)!.hour_or_minut_limit,
+                                                minuteLabelText: AppLocalizations.of(context)!.minut,
                                                 builder: (context, child) {
                                                   return MediaQuery(
                                                     data: MediaQuery.of(context)
@@ -387,19 +431,34 @@ class _AppListPageState extends State<AppListPage> with SingleTickerProviderStat
 ),
             ),
             SafeArea(
-              child: BlocBuilder<ChildAppUsageBloc, ChildAppUsageState>(
-              builder: (context, state) {
-                switch (state.status) {
-                  case ChildAppUsage.loading:
-                    return LoadingWidget();
-                  case ChildAppUsage.success:
-                    return Container(
-                      child: Column(
-                        children: [
-                          SizedBox(
-                            height: MediaQuery.of(context).size.height * 0.03,
+              child: Column(
+                children: [
+                  TextButton(
+                    onPressed: _pickDateDialog,
+                    child: Row(
+                      children: [
+                        Text(AppLocalizations.of(context)!.date,style: TextStyle(color: Colors.black,fontSize: 18,fontWeight: FontWeight.bold),),
+                        Text(
+                          Jiffy.parse(_selectedDate.toString())
+                              .yMMMMd,
+                          style: TextStyle(
+                            fontSize: 18,
+                            color: Colors.blueAccent,
+                            fontWeight: FontWeight.bold,
                           ),
-                          Expanded(
+                          textAlign: TextAlign.left,
+                        ),
+                      ],
+                    ),
+                  ),
+                  Expanded(
+                    child: BlocBuilder<ChildAppUsageBloc, ChildAppUsageState>(
+                    builder: (context, state) {
+                      switch (state.status) {
+                        case ChildAppUsage.loading:
+                          return LoadingWidget();
+                        case ChildAppUsage.success:
+                          return Container(
                             child: ListView.builder(
                                 controller: _scrollController2,
                                 itemCount: state.islast
@@ -407,7 +466,15 @@ class _AppListPageState extends State<AppListPage> with SingleTickerProviderStat
                                     : state.apps.length + 1,
                                 itemBuilder: (context, index) {
                                   Image? image;
+                                  int hours = 0;
+                                  int minutes = 0;
+                                  double utime = 0;
                                   if(state.apps.length > index ){
+                                    utime = state.apps[index].usageTime == null ? 0.0 : state.apps[index].usageTime!.toDouble();
+                                    if(utime>0){
+                                      hours = (utime / 60).floor();
+                                      minutes = ((utime / 60 - hours) * 60).round();
+                                    }
                                     if(state.apps[index].img !=null ){
                                       String base64String = state.apps[index].img.toString();
                                       String singleLineString = base64String.replaceAll('\n', '');
@@ -415,6 +482,8 @@ class _AppListPageState extends State<AppListPage> with SingleTickerProviderStat
                                       image = Image.memory(bytes,height: 50,);
                                     }
                                   }
+
+
                                   return index >= state.apps.length
                                       ? LoadingWidget()
                                       : ListTile(
@@ -424,13 +493,14 @@ class _AppListPageState extends State<AppListPage> with SingleTickerProviderStat
                                       children: [
                                         SizedBox(height: 10,),
                                         LinearProgressIndicator(
-                                          value: state.apps[index].usageTime == null ? 0.0 : state.apps[index].usageTime!.toDouble(),
-                                          color: Colors.blue,
+                                          minHeight: 8,
+                                          value: utime*0.01,
+                                          color: utime>50?utime<70?Colors.redAccent:Colors.red:Colors.blue,
                                         ),
                                         SizedBox(height: 10,),
                                         Text(
-                                            state.apps[index].usageTime == null ? "0"+" minut usage" :  state.apps[index].usageTime.toString()+
-                                                " minut usage"),
+                                            hours>0?hours.toString()+AppLocalizations.of(context)!.hour+" "+minutes.toString()+AppLocalizations.of(context)!.minut
+                                            :minutes.toString()+AppLocalizations.of(context)!.minut),
                                       ],
                                     ),
                                     leading: image,
@@ -452,24 +522,24 @@ class _AppListPageState extends State<AppListPage> with SingleTickerProviderStat
                                     },
                                   );
                                 }),
-                          ),
-                        ],
-                      ),
-                    );
-                  case ChildAppUsage.error:
-                    return Center(
-                      child: Text(state.errorMessage),
-                    );
-                  case ChildAppUsage.expired:
-                    return Column(
-                      mainAxisAlignment: MainAxisAlignment.center,
-                      children: [
-                        UpgradeWidget(),
-                      ],
-                    );
-                }
+                          );
+                        case ChildAppUsage.error:
+                          return Center(
+                            child: Text(state.errorMessage),
+                          );
+                        case ChildAppUsage.expired:
+                          return Column(
+                            mainAxisAlignment: MainAxisAlignment.center,
+                            children: [
+                              UpgradeWidget(),
+                            ],
+                          );
+                      }
 
-              },
+                    },
+                    ),
+                  ),
+                ],
               ),
             ),
           ],

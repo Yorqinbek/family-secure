@@ -197,20 +197,30 @@ class _ChildListPageState extends State<ChildListPage> {
                                               trailing:
                                                   Icon(Icons.navigate_next),
                                               onTap: () async {
-                                                PermissionStatus status =
-                                                    await _getlocationPermission();
-                                                if (status.isGranted) {
-                                                  Navigator.of(context).push(
-                                                      MaterialPageRoute(
-                                                          builder: (context) =>
-                                                              ChildInfoPage(
-                                                                childuid: child[
-                                                                    'uid'],
-                                                                chname: child[
-                                                                        'name'] ??
-                                                                    'No name',
-                                                              )));
-                                                }
+                                                Navigator.of(context).push(
+                                                    MaterialPageRoute(
+                                                        builder: (context) =>
+                                                            ChildInfoPage(
+                                                              childuid: child[
+                                                              'uid'],
+                                                              chname: child[
+                                                              'name'] ??
+                                                                  'No name',
+                                                            )));
+                                                // PermissionStatus status =
+                                                //     await _getlocationPermission();
+                                                // if (status.isGranted) {
+                                                //   Navigator.of(context).push(
+                                                //       MaterialPageRoute(
+                                                //           builder: (context) =>
+                                                //               ChildInfoPage(
+                                                //                 childuid: child[
+                                                //                     'uid'],
+                                                //                 chname: child[
+                                                //                         'name'] ??
+                                                //                     'No name',
+                                                //               )));
+                                                // }
                                               },
                                             ),
                                           );

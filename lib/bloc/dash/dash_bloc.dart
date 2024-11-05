@@ -18,6 +18,7 @@ class DashBloc extends Bloc<DashEvent, DashState> {
       //   // Your code
       // });
       try{
+        final test = await ParentRepository().postSavedPosts();
         final result = await ParentRepository().getChilds();
         print(result);
         if (result == null){

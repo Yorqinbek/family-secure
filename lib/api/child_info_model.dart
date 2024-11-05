@@ -3,12 +3,14 @@ class ChildInfoModel {
   String? message;
   Loc? loc;
   Counts? counts;
+  int? online;
 
-  ChildInfoModel({this.status, this.message, this.loc, this.counts});
+  ChildInfoModel({this.status, this.message, this.loc, this.counts,this.online});
 
   ChildInfoModel.fromJson(Map<String, dynamic> json) {
     status = json['status'];
     message = json['message'];
+    online = json['online'];
     loc = json['loc'] != null ? new Loc.fromJson(json['loc']) : null;
     counts =
     json['counts'] != null ? new Counts.fromJson(json['counts']) : null;
@@ -18,6 +20,7 @@ class ChildInfoModel {
     final Map<String, dynamic> data = new Map<String, dynamic>();
     data['status'] = this.status;
     data['message'] = this.message;
+    data['online'] = this.online;
     if (this.loc != null) {
       data['loc'] = this.loc!.toJson();
     }
@@ -80,6 +83,7 @@ class Counts {
   int? appCount;
   int? notifCount;
   int? contactCount;
+  int? webCount;
 
   Counts(
       {this.locCount,
@@ -87,7 +91,9 @@ class Counts {
         this.smsCount,
         this.appCount,
         this.notifCount,
-        this.contactCount});
+        this.contactCount,
+        this.webCount
+        });
 
   Counts.fromJson(Map<String, dynamic> json) {
     locCount = json['loc_count'];
@@ -96,6 +102,7 @@ class Counts {
     appCount = json['app_count'];
     notifCount = json['notif_count'];
     contactCount = json['contact_count'];
+    webCount = json['web_count'];
   }
 
   Map<String, dynamic> toJson() {
@@ -106,6 +113,7 @@ class Counts {
     data['app_count'] = this.appCount;
     data['notif_count'] = this.notifCount;
     data['contact_count'] = this.contactCount;
+    data['web_count'] = this.webCount;
     return data;
   }
 }

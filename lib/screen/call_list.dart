@@ -14,6 +14,8 @@ import '../components/dialogs.dart';
 import '../widgets/EmptyListWidget.dart';
 import '../widgets/loadingwidget.dart';
 import '../widgets/upgradewidget.dart';
+import 'package:flutter_gen/gen_l10n/app_localizations.dart';
+
 
 class CallListPage extends StatefulWidget {
   final String childuid;
@@ -33,15 +35,14 @@ class _CallListPageState extends State<CallListPage> {
 
   formattedTime(int timeInSecond) {
     int sec = timeInSecond % 60;
+    print(sec);
     int min = (timeInSecond / 60).floor();
-    String minute = min.toString().length <= 1 ? "$min" : "$min";
-    String second = sec.toString().length <= 1 ? "$sec" : "$sec";
-    if (minute.toString().contains("0") && !second.toString().contains("0")) {
+    if (min.toString().contains("0") && !min.toString().contains("0")) {
       return "-";
-    } else if (!minute.toString().contains("0")) {
-      return "$minute min $second sec";
+    } else if (!min.toString().contains("0")) {
+      return "$min min $sec sec";
     } else {
-      return "$second sec";
+      return "$sec sec";
     }
   }
 
@@ -131,7 +132,7 @@ class _CallListPageState extends State<CallListPage> {
     return Scaffold(
       appBar: AppBar(
         // centerTitle: true, // this is all you need
-        title: Text("Звонки"),
+        title: Text(AppLocalizations.of(context)!.calls,),
         actions: [
           TextButton(
             onPressed: _pickDateDialog,

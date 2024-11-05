@@ -1,21 +1,21 @@
 {
   "project_info": {
-    "project_number": "971402296966",
-    "project_id": "family-adf60",
-    "storage_bucket": "family-adf60.appspot.com"
+    "project_number": "557053568991",
+    "project_id": "family-fed05",
+    "storage_bucket": "family-fed05.appspot.com"
   },
   "client": [
     {
       "client_info": {
-        "mobilesdk_app_id": "1:971402296966:android:b0ff031fe8a7260f7adb07",
+        "mobilesdk_app_id": "1:557053568991:android:2d4e7302075068a300466a",
         "android_client_info": {
-          "package_name": "uz.bbpro.familysecure"
+          "package_name": "uz.bbpro.new.familysecure"
         }
       },
       "oauth_client": [],
       "api_key": [
         {
-          "current_key": "AIzaSyBA710fR7PsT1ucvVLs4tC6MJ2t1mMJwHA"
+          "current_key": "AIzaSyB78N3JjKj_yfeTVNGgR2xqRyWqIZ1oeBU"
         }
       ],
       "services": {

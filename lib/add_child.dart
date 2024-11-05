@@ -10,7 +10,7 @@ import 'package:soqchi/components/dialogs.dart';
 import 'package:soqchi/childs_list.dart';
 import 'package:soqchi/screen/dash.dart';
 import 'package:soqchi/poster_help/post_helper.dart';
-
+import 'package:flutter_gen/gen_l10n/app_localizations.dart';
 class AddChild extends StatefulWidget {
   final String child_name;
   final int old;
@@ -91,7 +91,7 @@ class _AddChildState extends State<AddChild> {
         final Map response_json = json.decode(response);
         if (response_json['status']) {
           MyCustomDialogs.success_dialog_custom(
-              context, "Добавлен новый ребенок!");
+              context, AppLocalizations.of(context)!.added_new_child);
           Navigator.pushReplacement(context,
               MaterialPageRoute(builder: (context) {
             return DashboardPage();
@@ -102,7 +102,7 @@ class _AddChildState extends State<AddChild> {
             return DashboardPage();
           }));
           MyCustomDialogs.error_dialog_custom(
-              context, "Пользователь с данным qr-кодом не найден!");
+              context, AppLocalizations.of(context)!.user_not_found);
         }
       } else {
         Navigator.pushReplacement(context,
@@ -110,7 +110,7 @@ class _AddChildState extends State<AddChild> {
           return DashboardPage();
         }));
         MyCustomDialogs.error_dialog_custom(
-            context, "Ошибка подключения к серверу. Попробуйте еще раз!");
+            context, AppLocalizations.of(context)!.server_error);
       }
     });
   }
@@ -119,7 +119,7 @@ class _AddChildState extends State<AddChild> {
     log('${DateTime.now().toIso8601String()}_onPermissionSet $p');
     if (!p) {
       ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(content: Text('no Permission')),
+         SnackBar(content: Text(AppLocalizations.of(context)!.permission_err)),
       );
     }
   }

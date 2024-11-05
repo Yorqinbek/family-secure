@@ -13,7 +13,7 @@ import 'package:soqchi/poster_help/post_helper.dart';
 import 'package:soqchi/widgets/EmptyListWidget.dart';
 import 'package:soqchi/widgets/loadingwidget.dart';
 import 'package:soqchi/widgets/upgradewidget.dart';
-
+import 'package:flutter_gen/gen_l10n/app_localizations.dart';
 import '../components/dialogs.dart';
 class NotificationListPage extends StatefulWidget {
   final String childuid;
@@ -116,7 +116,7 @@ class _NotificationListPageState extends State<NotificationListPage> {
     return Scaffold(
       appBar: AppBar(
         // centerTitle: true, // this is all you need
-        title: Text("Уведомления"),
+        title: Text(AppLocalizations.of(context)!.notification,),
         actions: [
           TextButton(
             onPressed: _pickDateDialog,

@@ -1,5 +1,6 @@
 import 'dart:async';
 import 'dart:convert';
+import 'dart:io';
 
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
@@ -7,6 +8,7 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:in_app_purchase/in_app_purchase.dart';
 import 'package:pay/pay.dart';
 import 'package:permission_handler/permission_handler.dart';
+import 'package:provider/provider.dart';
 import 'package:pull_to_refresh/pull_to_refresh.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:shimmer/shimmer.dart';
@@ -19,7 +21,10 @@ import 'package:soqchi/home.dart';
 import 'package:soqchi/poster_help/post_helper.dart';
 import 'package:soqchi/screen/settings.dart';
 import 'package:flutter_gen/gen_l10n/app_localizations.dart';
+import 'package:soqchi/widgets/EmptyListWidget.dart';
+import 'package:soqchi/widgets/server_error.dart';
 
+import '../langua/LanguageChangeProvider.dart';
 import '../payment/payment_configurations.dart';
 import '../payment/purchase_bloc.dart';
 import '../widgets/upgradewidget.dart';
@@ -38,20 +43,27 @@ class _DashboardPageState extends State<DashboardPage> {
 
   // final Future<SharedPreferences> _prefs = SharedPreferences.getInstance();
 
-  Future<PermissionStatus> _getlocationPermission() async {
-    var status = await Permission.location.status;
-    if (!status.isGranted) {
-      final result = await Permission.location.request();
-      return result;
-    } else {
-      return status;
-    }
-  }
-
   @override
   void initState() {
+    setDefLan();
     BlocProvider.of<DashBloc>(context).add(DashLoadingData());
     super.initState();
+  }
+
+  void setDefLan() async {
+    SharedPreferences prefs= await SharedPreferences.getInstance();
+    int? lanCode = prefs.getInt("lan");
+    if(lanCode!=null){
+      if(lanCode==0){
+        Provider.of<LanguageChangeProvider>(context, listen: false).changeLocale("en");
+      }
+      if(lanCode==1){
+        Provider.of<LanguageChangeProvider>(context, listen: false).changeLocale("uz");
+      }
+      if(lanCode==2){
+        Provider.of<LanguageChangeProvider>(context, listen: false).changeLocale("ru");
+      }
+    }
   }
 
   var token = '';
@@ -118,9 +130,9 @@ class _DashboardPageState extends State<DashboardPage> {
     return Scaffold(
       backgroundColor: Colors.white,
       appBar: AppBar(
-        centerTitle: true,
+        centerTitle: false,
         backgroundColor: Colors.white,
-        title: Text("FamilySecure",style: TextStyle(fontSize: 24,fontWeight: FontWeight.bold,),),
+        title: Text("Family Secure",style: TextStyle(fontSize: 24,fontWeight: FontWeight.bold,),),
         actions: [
           IconButton(onPressed: (){
             Navigator.of(context).push(
@@ -130,7 +142,7 @@ class _DashboardPageState extends State<DashboardPage> {
             );
           }, icon: Icon(Icons.settings,color: Colors.blue,))
         ],
-        leading: IconButton(onPressed: (){}, icon: Icon(Icons.help,color:  Colors.blue,)),
+        // leading: IconButton(onPressed: (){}, icon: Icon(Icons.help,color:  Colors.blue,)),
       ),
       body: SafeArea(
         child: Material(
@@ -217,9 +229,6 @@ class _DashboardPageState extends State<DashboardPage> {
                                 (context, index) {
                               return InkWell(
                                 onTap: () async {
-                                  PermissionStatus status =
-                                  await _getlocationPermission();
-                                  if (status.isGranted) {
                                     Navigator.push(context, MaterialPageRoute(builder: (context) {
                                       return BlocProvider(
                                         create: (ctx) => ChildInfoBloc(),
@@ -245,7 +254,7 @@ class _DashboardPageState extends State<DashboardPage> {
                                     //               chname: child['name'] ??
                                     //                   'No name',
                                     //             )));
-                                  }
+
                                 },
                                 child: Card(
                                   shadowColor: Colors.blue,
@@ -283,7 +292,7 @@ class _DashboardPageState extends State<DashboardPage> {
                                                       fontSize: 22),
                                                 ),
                                                 Text(
-                                                  "child",
+                                                    state.childList[index].jins == 0 ? AppLocalizations.of(context)!.girl : AppLocalizations.of(context)!.son,
                                                   style: TextStyle(
                                                       color: Colors.grey,
                                                       fontWeight:
@@ -314,9 +323,7 @@ class _DashboardPageState extends State<DashboardPage> {
                       return SliverList(
                         delegate: SliverChildListDelegate([
                           SizedBox(height: MediaQuery.of(context).size.height*0.3,),
-                          Center(
-                            child: Text("Ошибка подключения к серверу!",style: TextStyle(fontSize: 16),),
-                          )
+                          ServerErrorWidget()
                         ]
                         )
                       );
@@ -325,9 +332,7 @@ class _DashboardPageState extends State<DashboardPage> {
                       return SliverList(
                           delegate: SliverChildListDelegate([
                             SizedBox(height: MediaQuery.of(context).size.height*0.3,),
-                            Center(
-                              child: Text("Пустой!",style: TextStyle(fontSize: 16),),
-                            )
+                            EmptyListWidget()
                           ]
                           )
                       );
