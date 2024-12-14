@@ -570,6 +570,7 @@ class ParentRepository{
   }
 
   Future<ChildCallListModel?> getchildcall(String chuid,String? next_page_url,String date) async{
+    print("getchildcall");
     var token = '';
     final Future<SharedPreferences> _prefs = SharedPreferences.getInstance();
     final SharedPreferences prefs = await _prefs;
@@ -586,16 +587,20 @@ class ParentRepository{
       url = Uri.parse(next_page_url);
     }
     Map data = {'chuid': chuid,'date':date};
+    print(date);
     //malumotlani jsonga moslashtirish
     var body = json.encode(data);
     try{
+      print("post");
       var response = await http.post(url,
           headers: {
             "Content-Type": "application/json",
             "Authorization": 'Bearer $token',
           },
           body: body);
+      print("post end");
       final resdata = json.decode(utf8.decode(response.bodyBytes));
+      print(resdata);
       if (response.statusCode == 200) {
         if (resdata['status']) {
           if (resdata['message'].toString().contains("Expired subscribe")){

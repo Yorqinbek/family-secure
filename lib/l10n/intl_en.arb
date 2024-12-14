@@ -9,7 +9,7 @@
     "oferta":"I agree to all terms",
     "login_button":"Sign in with Google",
     "login_button_apple":"Sign in with Apple",
-    "server_error":"Error connecting to server!",
+    "server_error":"Error connecting to server! Please try again!",
     "information_not_found":"No information found!",
     "free_subsr_over":"Free subscription is over!",
     "update":"Update",

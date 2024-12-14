@@ -3,6 +3,7 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_markdown/flutter_markdown.dart';
 import 'package:fluttertoast/fluttertoast.dart';
 import 'package:in_app_purchase/in_app_purchase.dart';
+import 'package:loader_overlay/loader_overlay.dart';
 import 'package:lottie/lottie.dart';
 import 'package:material_dialogs/dialogs.dart';
 import 'package:material_dialogs/shared/types.dart';
@@ -110,12 +111,12 @@ class _AppleSubscriptionPageState extends State<AppleSubscriptionPage> {
 
               ),
               onClose: (a){
-                Navigator.pushReplacement(context, MaterialPageRoute(builder: (context) {
+                Navigator.pushAndRemoveUntil(context, MaterialPageRoute(builder: (context) {
                   return BlocProvider(
                     create: (ctx) => DashBloc(),
                     child: DashboardPage(),
                   );
-                }));
+                }),(Route<dynamic> route) => false);
               },
               customView: SizedBox(),
               customViewPosition: CustomViewPosition.BEFORE_ACTION,
@@ -163,9 +164,11 @@ class _AppleSubscriptionPageState extends State<AppleSubscriptionPage> {
   }
 
   Future<void> _onPurchaseProduct(String product_id) async {
+    context.loaderOverlay.show();
     final product = _products!.firstWhere((product) => product.id == product_id);
     final PurchaseParam purchaseParam = PurchaseParam(productDetails: product);
     _inAppPurchase.buyNonConsumable(purchaseParam: purchaseParam);
+    context.loaderOverlay.hide();
   }
 
   RefreshController _refreshController =
@@ -189,138 +192,141 @@ class _AppleSubscriptionPageState extends State<AppleSubscriptionPage> {
       body:SmartRefresher(
         controller: _refreshController,
         onRefresh: _onRefresh,
-        child: BlocBuilder<SubscriptBloc, SubscriptState>(
-          builder: (context, state) {
-            if(state is SubscriptError){
-              return ServerErrorWidget();
-            }
-            if(state is SubscriptExpired || state is SubscriptSuccess){
-              return _products == null ? SizedBox():_products!.isEmpty ? Center(child:Text("Empty")):Padding(
-                padding: const EdgeInsets.all(8.0),
-                child: Padding(
+        child: _products == null ? Center(child: CircularProgressIndicator()) : _products!.isEmpty ?
+        ServerErrorWidget() : LoaderOverlay(
+          child: BlocBuilder<SubscriptBloc, SubscriptState>(
+            builder: (context, state) {
+              if(state is SubscriptError){
+                return ServerErrorWidget();
+              }
+              if(state is SubscriptExpired || state is SubscriptSuccess){
+                return Padding(
                   padding: const EdgeInsets.all(8.0),
-                  child: Column(
-                    mainAxisAlignment: MainAxisAlignment.center,
-                    crossAxisAlignment: CrossAxisAlignment.center,
-                    children: [
-                      // Row(
-                      //   mainAxisAlignment: MainAxisAlignment.center,
-                      //   children: [
-                      //     Text(  AppLocalizations.of(context)!.subsc_title,style: TextStyle(fontSize: 30 ,color: Colors.blue,fontWeight: FontWeight.bold),),
-                      //   ],
-                      // ),
-                      // Padding(
-                      //   padding: const EdgeInsets.all(12.0),
-                      //   child: Text(  AppLocalizations.of(context)!.subsc_subtitle,style: TextStyle(fontSize: 14,color: Colors.black),textAlign:TextAlign.center),
-                      // ),
-                      Text("Premium Subscription:",style: TextStyle(fontSize: 22,fontWeight: FontWeight.bold),),
-                      SizedBox(height: 10,),
-                      Column(
-                        mainAxisAlignment: MainAxisAlignment.start,
-                        crossAxisAlignment: CrossAxisAlignment.start,
-                        children: [
-                          Text("- App usage and Block",style: TextStyle(fontSize: 15,fontStyle: FontStyle.italic),),
-                          Text("- Sms and Contact information",style: TextStyle(fontSize: 15,fontStyle: FontStyle.italic),),
-                          Text("- Location information",style: TextStyle(fontSize: 15,fontStyle: FontStyle.italic),),
-                          Text("- Notification and other information from your child",style: TextStyle(fontSize: 15,fontStyle: FontStyle.italic),),
-                        ],
-                      ),
-                      Expanded(
-                        child: ListView.builder(
-                          itemCount: _products!.length,
-                          itemBuilder: (context, index) {
-                            final product = _products![index];
-                            return InkWell(
-                              onTap: ()async{
-                                print(product.id);
-                                await _onPurchaseProduct(product.id);
+                  child: Padding(
+                    padding: const EdgeInsets.all(8.0),
+                    child: Column(
+                      mainAxisAlignment: MainAxisAlignment.center,
+                      crossAxisAlignment: CrossAxisAlignment.center,
+                      children: [
+                        // Row(
+                        //   mainAxisAlignment: MainAxisAlignment.center,
+                        //   children: [
+                        //     Text(  AppLocalizations.of(context)!.subsc_title,style: TextStyle(fontSize: 30 ,color: Colors.blue,fontWeight: FontWeight.bold),),
+                        //   ],
+                        // ),
+                        // Padding(
+                        //   padding: const EdgeInsets.all(12.0),
+                        //   child: Text(  AppLocalizations.of(context)!.subsc_subtitle,style: TextStyle(fontSize: 14,color: Colors.black),textAlign:TextAlign.center),
+                        // ),
+                        Text("Premium Subscription:",style: TextStyle(fontSize: 22,fontWeight: FontWeight.bold),),
+                        SizedBox(height: 10,),
+                        Column(
+                          mainAxisAlignment: MainAxisAlignment.start,
+                          crossAxisAlignment: CrossAxisAlignment.start,
+                          children: [
+                            Text("- App usage and Block",style: TextStyle(fontSize: 15,fontStyle: FontStyle.italic),),
+                            Text("- Sms and Contact information",style: TextStyle(fontSize: 15,fontStyle: FontStyle.italic),),
+                            Text("- Location information",style: TextStyle(fontSize: 15,fontStyle: FontStyle.italic),),
+                            Text("- Notification and other information from your child",style: TextStyle(fontSize: 15,fontStyle: FontStyle.italic),),
+                          ],
+                        ),
+                        Expanded(
+                          child: ListView.builder(
+                            itemCount: _products!.length,
+                            itemBuilder: (context, index) {
+                              final product = _products![index];
+                              return InkWell(
+                                onTap: ()async{
+                                  print(product.id);
+                                  await _onPurchaseProduct(product.id);
 
-                              },
-                              child: Container(
-                                child: Card(
-                                  margin: EdgeInsets.all(15),
-                                  color: Colors.blueAccent,
-                                  child: Padding(
-                                    padding: const EdgeInsets.all(8.0),
-                                    child: Column(
-                                      mainAxisAlignment: MainAxisAlignment.center,
-                                      crossAxisAlignment: CrossAxisAlignment.center,
-                                      children: [
-                                        Padding(
-                                          padding: const EdgeInsets.all(10.0),
-                                          child: Icon(Icons.star,size: 20,color: Colors.yellowAccent,),
-                                        ),
-                                        Padding(
-                                          padding: const EdgeInsets.all(10.0),
-                                          child: Text(product.title,style: TextStyle(color: Colors.white,fontSize: 20,fontWeight: FontWeight.bold),textAlign: TextAlign.center,),
-                                        ),
-                                        Text(product.description,style: TextStyle(color: Colors.white,fontSize: 20),textAlign: TextAlign.center,),
-                                        Padding(
-                                          padding: const EdgeInsets.all(10.0),
-                                          child: Text(product.price,style: TextStyle(color: Colors.white,fontSize: 20,fontWeight: FontWeight.bold,fontStyle:FontStyle.italic),),
-                                        ),
-                                        SizedBox(height: 10,),
+                                },
+                                child: Container(
+                                  child: Card(
+                                    margin: EdgeInsets.all(15),
+                                    color: Colors.blueAccent,
+                                    child: Padding(
+                                      padding: const EdgeInsets.all(8.0),
+                                      child: Column(
+                                        mainAxisAlignment: MainAxisAlignment.center,
+                                        crossAxisAlignment: CrossAxisAlignment.center,
+                                        children: [
+                                          Padding(
+                                            padding: const EdgeInsets.all(10.0),
+                                            child: Icon(Icons.star,size: 20,color: Colors.yellowAccent,),
+                                          ),
+                                          Padding(
+                                            padding: const EdgeInsets.all(10.0),
+                                            child: Text(product.title,style: TextStyle(color: Colors.white,fontSize: 20,fontWeight: FontWeight.bold),textAlign: TextAlign.center,),
+                                          ),
+                                          Text(product.description,style: TextStyle(color: Colors.white,fontSize: 20),textAlign: TextAlign.center,),
+                                          Padding(
+                                            padding: const EdgeInsets.all(10.0),
+                                            child: Text(product.price,style: TextStyle(color: Colors.white,fontSize: 20,fontWeight: FontWeight.bold,fontStyle:FontStyle.italic),),
+                                          ),
+                                          SizedBox(height: 10,),
 
-                                        // Padding(
-                                        //   padding: const EdgeInsets.all(15.0),
-                                        //   child: ListTile(
-                                        //     title: Text(product.description,style: TextStyle(color: Colors.white),),
-                                        //     // subtitle: Text(product.description),
-                                        //     trailing: TextButton(
-                                        //       child: Text(product.price),
-                                        //       onPressed: () {
-                                        //         context
-                                        //             .read<PurchaseBloc>()
-                                        //             .add(PurchaseProduct(product.id));
-                                        //       },
-                                        //     ),
-                                        //   ),
-                                        // ),
-                                      ],
+                                          // Padding(
+                                          //   padding: const EdgeInsets.all(15.0),
+                                          //   child: ListTile(
+                                          //     title: Text(product.description,style: TextStyle(color: Colors.white),),
+                                          //     // subtitle: Text(product.description),
+                                          //     trailing: TextButton(
+                                          //       child: Text(product.price),
+                                          //       onPressed: () {
+                                          //         context
+                                          //             .read<PurchaseBloc>()
+                                          //             .add(PurchaseProduct(product.id));
+                                          //       },
+                                          //     ),
+                                          //   ),
+                                          // ),
+                                        ],
+                                      ),
                                     ),
                                   ),
                                 ),
-                              ),
-                            );
-                          },
+                              );
+                            },
+                          ),
                         ),
-                      ),
-                      Padding(
-                        padding: const EdgeInsets.all(8.0),
-                        child: Wrap(
-                          children: [
-                            Text("By subscribing to Family Secure, you accept the terms of the ",style: TextStyle(fontSize: 12),),
-                            InkWell(child: Text("User Agreement",style: TextStyle(color: Colors.blue,fontSize: 12),),onTap: ()async{
-                              await open_website("https://bbpro.me/templates/template31/useragg.html");
-                            },),
-                            Text(" and the Family Secure ",style: TextStyle(fontSize: 12),),
-                            InkWell(child: Text("Privacy Policy",style: TextStyle(color: Colors.blue,fontSize: 12)),onTap: ()async{
-                              await open_website("https://bbpro.me/templates/template31/privacy.html");
-                            },),
-                          ],
+                        Padding(
+                          padding: const EdgeInsets.all(8.0),
+                          child: Wrap(
+                            children: [
+                              Text("By subscribing to Family Secure, you accept the terms of the ",style: TextStyle(fontSize: 12),),
+                              InkWell(child: Text("User Agreement",style: TextStyle(color: Colors.blue,fontSize: 12),),onTap: ()async{
+                                await open_website("https://bbpro.me/templates/template31/useragg.html");
+                              },),
+                              Text(" and the Family Secure ",style: TextStyle(fontSize: 12),),
+                              InkWell(child: Text("Privacy Policy",style: TextStyle(color: Colors.blue,fontSize: 12)),onTap: ()async{
+                                await open_website("https://bbpro.me/templates/template31/privacy.html");
+                              },),
+                            ],
+                          ),
                         ),
-                      ),
-                      // Row(
-                      //   children: [
-                      //     Expanded(
-                      //       child: Markdown(
-                      //         controller: _scrollController,
-                      //         selectable: true,
-                      //         styleSheet: MarkdownStyleSheet(
-                      //             p: TextStyle(fontSize: 16)
-                      //         ),
-                      //         data:"By subscribing to Family Secure, you accept the terms of the User Agreement and the Family Secure Privacy Policy.",
-                      //       ),
-                      //     ),
-                      //   ],
-                      // )
-                    ],
+                        // Row(
+                        //   children: [
+                        //     Expanded(
+                        //       child: Markdown(
+                        //         controller: _scrollController,
+                        //         selectable: true,
+                        //         styleSheet: MarkdownStyleSheet(
+                        //             p: TextStyle(fontSize: 16)
+                        //         ),
+                        //         data:"By subscribing to Family Secure, you accept the terms of the User Agreement and the Family Secure Privacy Policy.",
+                        //       ),
+                        //     ),
+                        //   ],
+                        // )
+                      ],
+                    ),
                   ),
-                ),
-              );
-            }
-            return  LoadingWidget();
-          },
+                );
+              }
+              return  LoadingWidget();
+            },
+          ),
         ),
       ),
     );

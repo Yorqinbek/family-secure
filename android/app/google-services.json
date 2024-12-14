@@ -2,17 +2,30 @@
   "project_info": {
     "project_number": "557053568991",
     "project_id": "family-fed05",
-    "storage_bucket": "family-fed05.appspot.com"
+    "storage_bucket": "family-fed05.firebasestorage.app"
   },
   "client": [
     {
       "client_info": {
-        "mobilesdk_app_id": "1:557053568991:android:2d4e7302075068a300466a",
+        "mobilesdk_app_id": "1:557053568991:android:3c6f8b2e9601070a00466a",
         "android_client_info": {
-          "package_name": "uz.bbpro.new.familysecure"
+          "package_name": "uz.bbpro.app.familysecure"
         }
       },
-      "oauth_client": [],
+      "oauth_client": [
+        {
+          "client_id": "557053568991-fl3v4et7pmdm52g1v3u6jvvq6rsgec0d.apps.googleusercontent.com",
+          "client_type": 1,
+          "android_info": {
+            "package_name": "uz.bbpro.app.familysecure",
+            "certificate_hash": "e271dd455065d999fc173cebe8a50e9e119d9fdb"
+          }
+        },
+        {
+          "client_id": "557053568991-j8a1k7ad190ccmgli355tple60dbdnh7.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
       "api_key": [
         {
           "current_key": "AIzaSyB78N3JjKj_yfeTVNGgR2xqRyWqIZ1oeBU"
@@ -20,7 +33,79 @@
       ],
       "services": {
         "appinvite_service": {
-          "other_platform_oauth_client": []
+          "other_platform_oauth_client": [
+            {
+              "client_id": "557053568991-j8a1k7ad190ccmgli355tple60dbdnh7.apps.googleusercontent.com",
+              "client_type": 3
+            },
+            {
+              "client_id": "557053568991-1ut1d1vv081fjge8uelcim4seutdfo55.apps.googleusercontent.com",
+              "client_type": 2,
+              "ios_info": {
+                "bundle_id": "uz.bbpro.new.familysecure"
+              }
+            }
+          ]
+        }
+      }
+    },
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:557053568991:android:2d4e7302075068a300466a",
+        "android_client_info": {
+          "package_name": "uz.bbpro.new.familysecure"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "557053568991-cr4isbi32qj2jatrrahv512g4a0s77rr.apps.googleusercontent.com",
+          "client_type": 1,
+          "android_info": {
+            "package_name": "uz.bbpro.new.familysecure",
+            "certificate_hash": "edfac74da94f04c1c79da53ca68b2e602aa24efe"
+          }
+        },
+        {
+          "client_id": "557053568991-jrmfr5ksutrs1gs13u1pj0eqlgoohrf1.apps.googleusercontent.com",
+          "client_type": 1,
+          "android_info": {
+            "package_name": "uz.bbpro.new.familysecure",
+            "certificate_hash": "48670cae207a59221d754d9e15e99db0274d52f5"
+          }
+        },
+        {
+          "client_id": "557053568991-m6e17ram1fr4gda2dli9jk8luvd7i9sc.apps.googleusercontent.com",
+          "client_type": 1,
+          "android_info": {
+            "package_name": "uz.bbpro.new.familysecure",
+            "certificate_hash": "e271dd455065d999fc173cebe8a50e9e119d9fdb"
+          }
+        },
+        {
+          "client_id": "557053568991-j8a1k7ad190ccmgli355tple60dbdnh7.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyB78N3JjKj_yfeTVNGgR2xqRyWqIZ1oeBU"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": [
+            {
+              "client_id": "557053568991-j8a1k7ad190ccmgli355tple60dbdnh7.apps.googleusercontent.com",
+              "client_type": 3
+            },
+            {
+              "client_id": "557053568991-1ut1d1vv081fjge8uelcim4seutdfo55.apps.googleusercontent.com",
+              "client_type": 2,
+              "ios_info": {
+                "bundle_id": "uz.bbpro.new.familysecure"
+              }
+            }
+          ]
         }
       }
     }

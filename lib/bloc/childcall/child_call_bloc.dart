@@ -15,12 +15,15 @@ class ChildCallBloc extends Bloc<ChildCallEvent, ChildCallState> {
     on<ChildCallEvent>((event, emit) async{
 
       if (event is ReloadChildCallEvent) {
+        print("ReloadChildCallEvent");
         emit(state.copyWith(
             nextPageUrl: "",
             status: ChildCall.loading, islast: false,
             calls: []
         ));
-        final call_response =  await ParentRepository().getchildcall(event.childuid,state.nextPageUrl,event.date);
+        print("call_response");
+        final call_response = await ParentRepository().getchildcall(event.childuid,state.nextPageUrl,event.date);
+        print("call_response");
         if(call_response == null){
           return emit(state.copyWith(
               status: ChildCall.expired, islast: true));

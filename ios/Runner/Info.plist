@@ -47,27 +47,27 @@
 	<true/>
 	<key>GIDClientID</key>
 	<string>971402296966-2pci4p7eq0l3bsaev4c7h6egurkm58nu.apps.googleusercontent.com</string>
-    <key>CFBundleURLTypes</key>
-    <array>
-    	<dict>
-    		<key>CFBundleTypeRole</key>
-    		<string>Editor</string>
-    		<key>CFBundleURLSchemes</key>
-    		<array>
-    			<string>com.googleusercontent.apps.971402296966-2pci4p7eq0l3bsaev4c7h6egurkm58nu</string>
-    		</array>
-    	</dict>
-    </array>
-    <key>NSCameraUsageDescription</key>
-    <string>This app requires access to the camera to scan qr code.</string>
-    <key>NSLocationWhenInUseUsageDescription</key>
-    <string>Need location when in use</string>
-    <key>NSLocationAlwaysAndWhenInUseUsageDescription</key>
-    <string>Always and when in use!</string>
-    <key>NSLocationUsageDescription</key>
-    <string>Older devices need location.</string>
-    <key>NSLocationAlwaysUsageDescription</key>
-    <string>Can I have location always?</string>
+	<key>CFBundleURLTypes</key>
+	<array>
+		<dict>
+			<key>CFBundleTypeRole</key>
+			<string>Editor</string>
+			<key>CFBundleURLSchemes</key>
+			<array>
+				<string>com.googleusercontent.apps.971402296966-2pci4p7eq0l3bsaev4c7h6egurkm58nu</string>
+			</array>
+		</dict>
+	</array>
+	<key>NSCameraUsageDescription</key>
+	<string>This app requires access to the camera to scan qr code.</string>
+	<key>NSLocationWhenInUseUsageDescription</key>
+	<string>Allow location access to display your precise position on the map in real-time</string>
+	<key>NSLocationAlwaysAndWhenInUseUsageDescription</key>
+	<string>Allow location access to display your precise position on the map in real-time</string>
+	<key>NSLocationUsageDescription</key>
+	<string>Allow location access to display your precise position on the map in real-time</string>
+	<key>NSLocationAlwaysUsageDescription</key>
+	<string>Allow location access to display your precise position on the map in real-time</string>
 	<key>NSAppTransportSecurity</key>
 	<dict>
 		<key>NSAllowsArbitraryLoads</key>
